@@ -62,6 +62,19 @@ public class OsDao {
             if (clienteNovo) {
                 save(obj.getCliente());
                 obj.getCliente().setIdCliente(idRetornadoCli);
+                if(sucesso){
+                    for (PecaServicoModel item : obj.getPecasSevico()) {
+                        ps3 = conn.prepareStatement(sql_2);
+                        ps3.setInt(1, idRetornadoOs);
+                        ps3.setString(2, item.getTipo());
+                        ps3.setString(3, item.getDescricao());
+                        ps3.setDouble(4, item.getQuantidade());
+                        ps3.setDouble(5, item.getValorUn());
+                        ps3.setDouble(6, item.getValorTotal());
+                        ps3.execute();
+                        sucesso = true;
+                    }      
+                }
             } else {
                 //atualizando o cliente com novas informações
                 update(obj.getCliente());
@@ -211,8 +224,9 @@ public class OsDao {
             ps.setInt(1, obj.getIdOrdem());
             ps.setString(2, obj.getTipo());
             ps.setString(3, obj.getDescricao());
-            ps.setDouble(4, obj.getValorUn());
-            ps.setDouble(5, obj.getValorTotal());
+            ps.setDouble(4, obj.getQuantidade());
+            ps.setDouble(5, obj.getValorUn());
+            ps.setDouble(6, obj.getValorTotal());
             ps.execute();
             
             retorno = "Gravado com sucesso!";
@@ -275,9 +289,10 @@ public class OsDao {
                 ps2.setInt(1, obj.getIdOrdem());
                 ps2.setString(2, item.getTipo());
                 ps2.setString(3, item.getDescricao());
-                ps2.setDouble(4, item.getValorUn());
-                ps2.setDouble(5, item.getValorTotal());
-                ps2.setInt(6, item.getIdServPeca());
+                ps2.setDouble(4, item.getQuantidade());
+                ps2.setDouble(5, item.getValorUn());
+                ps2.setDouble(6, item.getValorTotal());
+                ps2.setInt(7, item.getIdServPeca());
                 ps2.execute();
                 sucesso = true;
             }
@@ -371,9 +386,15 @@ public class OsDao {
             ps = conn.prepareStatement(sql);
 
             //adicionando os valores de acordo a ordem dos parametros do string sql
-            
-            //ps.setString(1, clscarros.getNome());
-            
+
+            ps.setInt(1, obj.getIdOrdem());
+            ps.setString(2, obj.getTipo());
+            ps.setString(3, obj.getDescricao());
+            ps.setDouble(4, obj.getQuantidade());
+            ps.setDouble(5, obj.getValorUn());
+            ps.setDouble(6, obj.getValorTotal());
+            ps.setInt(7, obj.getIdServPeca());
+            ps.execute();
             
             //executando a instrução com os parametro setados da classe colaborador
             ps.execute();
@@ -398,7 +419,7 @@ public class OsDao {
         }
     }
 
-    public void delete(int id_carro) {
+    public void deleteById(int parametro) {
         // variavel com a string do comando SQL para atualização dos dados na enticade Colaborador
         String sql = "delete from exemplo where id = ?";
         String sql2 = "delete from exemplo where id = ?";
@@ -410,14 +431,15 @@ public class OsDao {
             conn = ConnectDb.getConexaoDAO();
             ps1 = conn.prepareStatement(sql2);
             //adicionando os valores de acordo a ordem dos parametros do string sql
-            ps1.setInt(1, id_carro);
-            
+            ps1.setInt(1, parametro);
             //executando a instrução com os parametro setados da classe colaborador
             ps1.execute();
             
-            ps = conn.prepareCall(sql);
-            ps.setInt(1, id_carro);
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, parametro);
             ps.execute();
+            
             
             retorno = "Deletado com sucesso!";
             sucesso = true;
@@ -429,6 +451,9 @@ public class OsDao {
                 if (ps != null) {
                     ps.close();
                 }
+                if (ps1 != null) {
+                    ps1.close();
+                }
                 if (conn != null) {
                     conn.close();
                     ConnectDb.FecharConexao();
@@ -439,27 +464,69 @@ public class OsDao {
         }
     }
 
-    public Object findByParameter(String parametro) {
-
-        String sql ="";
-        
-        Object obj = null; 
+    public OrdemServicoModel findById(int idOs) {
+        OrdemServicoModel obj = new OrdemServicoModel();
+        String sql ="select os.id as idOrdem, os.nomeVeiculo, os.modeloVeiculo, os.marcaVeiculo, os.corVeiculo, os.placaVeiculo, os.mecanico,"
+                + " os.defeitoreclamado, os.relatomecanico, os.datachegada, os.dataentrega, os.status, cl.id as idCliente, cl.nome, cl.cpf,"
+                + " cl.rg, cl.rua, cl.bairro, cl.numero, cl.cidade, cl.estado, cl.cep, cl.celular, ios.id as idItemOs, ios.tipo, ios.descricao,"
+                + " ios.quantidade, ios.valor_un, ios.valor_total"
+                + " from ordemservico os"
+                + " inner join cliente cl on cl.id = os.id_cliente"
+                + " inner join itens_ordemservico ios on ios.id_ordem = os.id"
+                + " where os.id = ?";      
         Connection conn = null;
         PreparedStatement ps = null;
-        ResultSet rset = null;
-
-        try {
-            obj = new Object();
+        ResultSet rs = null;
+        try {           
             conn = ConnectDb.getConexaoDAO();
             ps = conn.prepareStatement(sql);
-            ps.setString(1, parametro);
-            rset = ps.executeQuery();
+            ps.setInt(1, idOs);
+            rs = ps.executeQuery();
             
-            while(rset.next()){
-            //obj.setId(rset.getInt("Id"));
-            
-            }
+            //declarando modelos para carregar objetos
+            ClienteModel objCli = new ClienteModel();
+            ArrayList<PecaServicoModel> listaPecaServico = new ArrayList<>();
 
+            while(rs.next()){
+            
+            obj.setIdOrdem(rs.getInt(1));
+            obj.setNomeVeiculo(rs.getString(2));
+            obj.setModeloVeiculo(rs.getString(3));
+            obj.setMarcaVeiculo(rs.getString(4));
+            obj.setCorVeiculo(rs.getString(5));
+            obj.setPlacaVeiculo(rs.getString(6));
+            obj.setMecanico(rs.getString(7));
+            obj.setDefeitoReclamado(rs.getString(8));
+            obj.setRelatoMecanico(rs.getString(9));
+            obj.setDataChegada(rs.getString(10));
+            obj.setDataEntrega(rs.getString(11));
+            obj.setStatus(rs.getString(12));
+            objCli.setIdCliente(rs.getInt(13));
+            objCli.setNome(rs.getString(14));
+            objCli.setCpf(rs.getString(15));
+            objCli.setRg(rs.getString(16));
+            objCli.setRua(rs.getString(17));
+            objCli.setBairro(rs.getString(18));
+            objCli.setNumero(rs.getString(19));
+            objCli.setCidade(rs.getString(20));
+            objCli.setEstado(rs.getString(21));
+            objCli.setCep(rs.getString(22));
+            objCli.setCelular(rs.getString(23));
+            obj.setCliente(objCli); // adicionando o cliente ao ObjetoPrincipal
+
+            PecaServicoModel objPs = new PecaServicoModel(); //criando um objeto pra adicional a lista de peças
+            objPs.setIdServPeca(rs.getInt(24));
+            objPs.setIdOrdem(obj.getIdOrdem());
+            objPs.setTipo(rs.getString(25));
+            objPs.setDescricao(rs.getString(26));
+            objPs.setQuantidade(rs.getDouble(27));
+            objPs.setValorUn(rs.getDouble(28));
+            objPs.setValorTotal(rs.getDouble(29));
+            listaPecaServico.add(objPs); // adicionando item a lista
+             
+            obj.setPecasSevico(listaPecaServico); //adicionado a lista no objeto principal
+
+            }
             retorno = "Encontrado!";
             sucesso = true;
 
@@ -469,8 +536,8 @@ public class OsDao {
             sucesso = false;
         } finally {
             try {
-                if (rset != null) {
-                    rset.close();
+                if (rs != null) {
+                    rs.close();
                 }
                 if (ps != null) {
                     ps.close();

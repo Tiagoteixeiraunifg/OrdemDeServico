@@ -12,6 +12,7 @@ public class PecaServicoModel {
     private int idOrdem;
     private String tipo;
     private String descricao;
+    private double quantidade;
     private double valorUn;
     private double valorTotal;
     
@@ -40,6 +41,15 @@ public class PecaServicoModel {
         this.descricao = descricao;
     }
 
+    public double getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(double quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    
     public double getValorUn() {
         return valorUn;
     }

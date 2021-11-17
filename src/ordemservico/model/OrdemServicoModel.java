@@ -137,6 +137,7 @@ public class OrdemServicoModel {
     public void setStatus(String status) {
         this.status = status;
     }
+
         
         
         

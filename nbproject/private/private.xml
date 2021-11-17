@@ -3,16 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/util/Util.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/dao/ConnectDb.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/controller/IController.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/util/UtilMascaras.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/test/TestesDb.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/controller/ControllerOS.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/dao/OsDao.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/script/CriarBancoDadosMySQL.sql</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/test/JUnitTestOS.java</file>
-            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/src/ordemservico/service/OsSevice.java</file>
+            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/OrdemDeServico/src/ordemservico/view/ViewOs.java</file>
+            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/OrdemDeServico/src/ordemservico/model/ClienteModel.java</file>
+            <file>file:/D:/Bakup%20Tiago/Documents/NetBeansProjects/OrdemServico/OrdemDeServico/src/ordemservico/OrdemServico.java</file>
         </group>
     </open-files>
 </project-private>

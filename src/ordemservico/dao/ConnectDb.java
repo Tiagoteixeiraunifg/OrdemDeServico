@@ -25,7 +25,7 @@ public class ConnectDb {
             Class.forName(driverName);
             // Configurando a nossa conexão //
             String serverName = "localhost"; 
-            String mydatabase = "os";
+            String mydatabase = "db_ordemservico";
             String porta = "3306";
             String url = "jdbc:mysql://" + serverName + ":"+porta+"/" + mydatabase + "?useTimezone=true&serverTimezone=UTC";
             String username = "root";  
