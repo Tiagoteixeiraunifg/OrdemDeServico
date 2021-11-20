@@ -22,7 +22,7 @@ public class ViewOs extends javax.swing.JFrame {
         controller = new ControllerOS();
         controller.executa(this);
     }
-
+     
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -128,6 +128,11 @@ public class ViewOs extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTableHistorico);
 
         jTextFieldBusca.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextFieldBusca.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldBuscaKeyReleased(evt);
+            }
+        });
 
         jLabel1.setText("Busca por Cliente e Placa de veiculo:");
 
@@ -649,6 +654,10 @@ public class ViewOs extends javax.swing.JFrame {
     private void jTextFieldCliCepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldCliCepActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldCliCepActionPerformed
+
+    private void jTextFieldBuscaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldBuscaKeyReleased
+        controller.jTextFiltroTabela();
+    }//GEN-LAST:event_jTextFieldBuscaKeyReleased
 
     public JButton getjButtonAddItem() {
         return jButtonAddItem;

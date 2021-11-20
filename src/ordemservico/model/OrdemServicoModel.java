@@ -12,7 +12,7 @@ public class OrdemServicoModel {
         
         private ClienteModel cliente;
         private ArrayList<PecaServicoModel> pecasSevico;
-        
+        private ArrayList<ClienteModel> listClientes;
         private int idOrdem;
         private String nomeVeiculo;
         private String modeloVeiculo;
@@ -25,7 +25,7 @@ public class OrdemServicoModel {
         private String dataChegada;
         private String dataEntrega;
         private String status;
-
+        
     public ClienteModel getCliente() {
         return cliente;
     }

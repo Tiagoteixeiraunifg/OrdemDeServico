@@ -18,7 +18,7 @@ public class ClienteModel {
     private String estado;
     private String cep;
     private String celular;
-
+    
 
 
     public int getIdCliente() {

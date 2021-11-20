@@ -43,13 +43,13 @@ public class OsDao {
      * @param obj
      * @param clienteNovo 
      */
-    public  void save(OrdemServicoModel obj, boolean clienteNovo)  {
+    public  void save(OrdemServicoModel obj, boolean clienteNovo, Connection conn)  {
         // variavel com a string do comando SQL para inserção de dados
         String sql = ""; // salvar Ordem de Serviço
         String sql_1 = "";  //pega o id da OS para lancar os produtos relacionados
         String sql_2 = ""; // salvar Itens da Ordem de Serviço
 
-        Connection conn = null;
+
         PreparedStatement ps = null; // salvar Ordem de Serviço
         PreparedStatement ps2 = null; // pegar id retornado
         PreparedStatement ps3 = null; // salvar Itens da Ordem de Serviço
@@ -60,7 +60,7 @@ public class OsDao {
             ps = conn.prepareStatement(sql);
             
             if (clienteNovo) {
-                save(obj.getCliente());
+                save(obj.getCliente(), conn);
                 obj.getCliente().setIdCliente(idRetornadoCli);
                 if(sucesso){
                     for (PecaServicoModel item : obj.getPecasSevico()) {
@@ -77,7 +77,7 @@ public class OsDao {
                 }
             } else {
                 //atualizando o cliente com novas informações
-                update(obj.getCliente());
+                update(obj.getCliente(), conn);
                 //adicionando os valores de acordo a ordem dos parametros do string sql
                 ps.setString(1, obj.getNomeVeiculo());
                 ps.setString(2, obj.getModeloVeiculo());
@@ -148,12 +148,11 @@ public class OsDao {
      * salva o cliente a partir do metodo principal de save(OrdemServicoModel obj) caso não tiver o cadastro;
      * @param obj 
      */
-    public  void save(ClienteModel obj)  {
+    public  void save(ClienteModel obj, Connection conn)  {
         // variavel com a string do comando SQL para inserção de dados
         String sql = ""; // salvar cliente
         String sqlIdRetorno = "";
         
-        Connection conn = null;
         PreparedStatement ps = null; // salvar Ordem de Serviço
         PreparedStatement ps2 = null;
         ResultSet rs;
@@ -210,11 +209,10 @@ public class OsDao {
      * Insere de forma individual o item no banco, usado para adicinar novos itens a OS já salvas e em modo de edição.
      * @param obj 
      */
-    public void save(PecaServicoModel obj) {
+    public void save(PecaServicoModel obj, Connection conn) {
         // variavel com a string do comando SQL para inserção de dados
         String sql = ""; // salvar cliente
 
-        Connection conn = null;
         PreparedStatement ps = null; // salvar Ordem de Serviço
 
         try {
@@ -253,12 +251,11 @@ public class OsDao {
      * Ao usar a função ele atualiza em cascata todas as informações relacionadas a essa ordem de serviço
      * @param obj 
      */
-    public void update(OrdemServicoModel obj) {
+    public void update(OrdemServicoModel obj, Connection conn) {
         // variavel com a string do comando SQL para atualização dos dados na enticade
         String sql = ""; // atualiza Ordem de Serviço
         String sql_1 = "";  //atualiza Itens da ordem de serviço
 
-        Connection conn = null;
         PreparedStatement ps = null; // atualiza Ordem de Serviço
         PreparedStatement ps2 = null; //atualiza Itens da ordem de serviço
 
@@ -298,7 +295,7 @@ public class OsDao {
             }
              
             retorno = retorno + "Atualizado lista de itens!";
-            sucesso = update(obj.getCliente()); // aqui atualiza o cliente.
+            sucesso = update(obj.getCliente(),conn); // aqui atualiza o cliente.
         } catch (SQLException e) {
             retorno = "Erro ao : " + e.getMessage();
             sucesso = false;
@@ -325,12 +322,11 @@ public class OsDao {
      * @param obj
      * @return 
      */
-    public boolean update(ClienteModel obj)  {
+    public boolean update(ClienteModel obj, Connection conn)  {
         boolean ret = false;
         // variavel com a string do comando SQL para atualização dos dados na enticade
         String sql = "";
         
-        Connection conn = null;
         PreparedStatement ps = null;
                
         try {
@@ -374,11 +370,16 @@ public class OsDao {
         return ret;
     }
     
-    public void update(PecaServicoModel obj)  {
+    
+    /**
+     * atualiza o item na lista de peca e servico da ordem de servico
+     * @param obj 
+     */
+    public void update(PecaServicoModel obj, Connection conn)  {
         // variavel com a string do comando SQL para atualização dos dados na enticade
         String sql = "";
         
-        Connection conn = null;
+
         PreparedStatement ps = null;
                
         try {
@@ -418,30 +419,34 @@ public class OsDao {
             }
         }
     }
-
-    public void deleteById(int parametro) {
+    
+    
+    /**
+     * deleta os itens e a ordem de servico com o parametro IdOrdem inserido
+     * @param parametro 
+     */
+    public void deleteById(int parametro, Connection conn) {
         // variavel com a string do comando SQL para atualização dos dados na enticade Colaborador
-        String sql = "delete from exemplo where id = ?";
-        String sql2 = "delete from exemplo where id = ?";
-        Connection conn = null;
+        String sql = "delete from itens_ordemserrvico where id_ordem = ?";
+        String sql2 = "delete from ordemservico where id = ?";
         PreparedStatement ps = null;
         PreparedStatement ps1 = null;
 
         try {
             conn = ConnectDb.getConexaoDAO();
-            ps1 = conn.prepareStatement(sql2);
+            ps1 = conn.prepareStatement(sql);
             //adicionando os valores de acordo a ordem dos parametros do string sql
             ps1.setInt(1, parametro);
             //executando a instrução com os parametro setados da classe colaborador
             ps1.execute();
+            retorno = "Deletado itens com sucesso e";
             
-            
-            ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement(sql2);
             ps.setInt(1, parametro);
             ps.execute();
             
             
-            retorno = "Deletado com sucesso!";
+            retorno = retorno + " OS deletada com sucesso!";
             sucesso = true;
         } catch (SQLException e) {
             retorno = "Erro ao Deletar: " + e.getMessage();
@@ -464,7 +469,12 @@ public class OsDao {
         }
     }
 
-    public OrdemServicoModel findById(int idOs) {
+    /**
+     * traz o objeto pelo id cadastrado no banco (objeto completo com lista de itens (serviços e peças) )
+     * @param idOs
+     * @return 
+     */
+    public OrdemServicoModel findById(int idOs, Connection conn) {
         OrdemServicoModel obj = new OrdemServicoModel();
         String sql ="select os.id as idOrdem, os.nomeVeiculo, os.modeloVeiculo, os.marcaVeiculo, os.corVeiculo, os.placaVeiculo, os.mecanico,"
                 + " os.defeitoreclamado, os.relatomecanico, os.datachegada, os.dataentrega, os.status, cl.id as idCliente, cl.nome, cl.cpf,"
@@ -474,7 +484,6 @@ public class OsDao {
                 + " inner join cliente cl on cl.id = os.id_cliente"
                 + " inner join itens_ordemservico ios on ios.id_ordem = os.id"
                 + " where os.id = ?";      
-        Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {           
@@ -553,26 +562,62 @@ public class OsDao {
 
         return obj;
     }
+    
+    /**
+     * traz toda a lista de Os cadastradas no banco de dados, para usar no carregamento da tabela do sistema.
+     * @return 
+     */
+    
+    public ArrayList<OrdemServicoModel> findAll(Connection conn)  {
 
-    public ArrayList<OrdemServicoModel> findAll()  {
-
-        ArrayList<OrdemServicoModel> obj = new ArrayList<OrdemServicoModel>();
+        ArrayList<OrdemServicoModel> list = new ArrayList<OrdemServicoModel>();
         
         //query de SQL
-        String sql ="";
+        String sql ="SELECT os.id, os.id_cliente, cl.nome, cl.cpf, cl.rg, cl.rua, "
+                + " cl.bairro, cl.numero, cl.cidade, cl.estado, cl.cep, cl.celular, "
+                + " os.nomeVeiculo, os.modeloVeiculo, os.marcaVeiculo, os.corVeiculo, "
+                + " os.placaVeiculo, os.mecanico, os.defeitoreclamado, os.relatomecanico, "
+                + " os.datachegada, os.dataentrega, os.status "
+                + " FROM ordemservico os"
+                + " inner join cliente cl on cl.id = os.id_cliente "
+                + " order by cl.nome, os.placaVeiculo";
 
-        Connection conn = null;
         PreparedStatement ps = null;
-        ResultSet rset = null;
+        ResultSet rs = null;
 
         try {
             conn = ConnectDb.getConexaoDAO();
             ps = conn.prepareStatement(sql);
-            rset = ps.executeQuery();
+            rs = ps.executeQuery();
             
-            while (rset.next()) {
-                OrdemServicoModel objs = new OrdemServicoModel(); 
-                obj.add(objs);
+            while (rs.next()) {
+                ClienteModel cliM = new ClienteModel();
+                OrdemServicoModel os = new OrdemServicoModel();
+                os.setIdOrdem(rs.getInt(1));
+                cliM.setIdCliente(rs.getInt(2));
+                cliM.setNome(rs.getString(3));
+                cliM.setCpf(rs.getString(4));
+                cliM.setRg(rs.getString(5));
+                cliM.setRua(rs.getString(6));
+                cliM.setBairro(rs.getString(7));
+                cliM.setNumero(rs.getString(8));
+                cliM.setCidade(rs.getString(9));
+                cliM.setEstado(rs.getString(10));
+                cliM.setCep(rs.getString(11));
+                cliM.setCelular(rs.getString(12));
+                os.setCliente(cliM);
+                os.setNomeVeiculo(rs.getString(13));
+                os.setModeloVeiculo(rs.getString(14));
+                os.setMarcaVeiculo(rs.getString(15));
+                os.setCorVeiculo(rs.getString(16));
+                os.setPlacaVeiculo(rs.getString(17));
+                os.setMecanico(rs.getString(18));
+                os.setDefeitoReclamado(rs.getString(19));
+                os.setRelatoMecanico(rs.getString(20));
+                os.setDataChegada(rs.getString(21));
+                os.setDataEntrega(rs.getString(22));
+                os.setStatus(rs.getString(23));
+                list.add(os);
             }
             retorno = "Encontrado!";
             sucesso = true;
@@ -582,8 +627,8 @@ public class OsDao {
             sucesso = false;
         } finally {
             try {
-                if (rset != null) {
-                    rset.close();
+                if (rs != null) {
+                    rs.close();
                 }
                 if (ps != null) {
                     ps.close();
@@ -597,28 +642,67 @@ public class OsDao {
                 retorno = "Erro: " + e;
             }
         }
-        return obj;
+        return list;
     }
     
-    public ArrayList<OrdemServicoModel> findAllParameter(String parametro)  {
+    /**
+     * traz toda a lista de Os cadastradas no banco de dados, passando paramentro String
+     * filtros podem ser Nome Cliente, Celular Cliente, Nome Veiculo, Modelo Veiculo, PlacaVeiculo,
+     * Mecanico, ordenado pelo nome do cliente e placa do veiculo.
+     * @param parametro
+     * @return 
+     */
+    public ArrayList<OrdemServicoModel> findAllParameter(String parametro, Connection conn)  {
 
-        ArrayList<OrdemServicoModel> obj = new ArrayList<OrdemServicoModel>();
+        ArrayList<OrdemServicoModel> list = new ArrayList<OrdemServicoModel>();
         
         //query de SQL
-        String sql ="";
-
-        Connection conn = null;
+        String sql ="SELECT os.id, os.id_cliente, cl.nome, cl.cpf, cl.rg, cl.rua, "
+                + " cl.bairro, cl.numero, cl.cidade, cl.estado, cl.cep, cl.celular, "
+                + " os.nomeVeiculo, os.modeloVeiculo, os.marcaVeiculo, os.corVeiculo, "
+                + " os.placaVeiculo, os.mecanico, os.defeitoreclamado, os.relatomecanico, "
+                + " os.datachegada, os.dataentrega, os.status "
+                + " FROM ordemservico os"
+                + " inner join cliente cl on cl.id = os.id_cliente "
+                + " where cl.nome like '"+parametro+"%' or cl.celular like '"+parametro+"%' or os.nomeVeiculo like '"+parametro+"%'"
+                + " or os.modeloVeiculo like '"+parametro+"%' or os.placaVeiculo like '"+parametro+"%' or os.mecanico like '"+parametro+"%'"
+                + " order by cl.nome, os.placaVeiculo";
         PreparedStatement ps = null;
-        ResultSet rset = null;
+        ResultSet rs = null;
 
         try {
             conn = ConnectDb.getConexaoDAO();
             ps = conn.prepareStatement(sql);
-            rset = ps.executeQuery();
+            rs = ps.executeQuery();
             
-            while (rset.next()) {
-                OrdemServicoModel objs = new OrdemServicoModel(); 
-                obj.add(objs);
+            while (rs.next()) {
+                ClienteModel cliM = new ClienteModel();
+                OrdemServicoModel os = new OrdemServicoModel();
+                os.setIdOrdem(rs.getInt(1));
+                cliM.setIdCliente(rs.getInt(2));
+                cliM.setNome(rs.getString(3));
+                cliM.setCpf(rs.getString(4));
+                cliM.setRg(rs.getString(5));
+                cliM.setRua(rs.getString(6));
+                cliM.setBairro(rs.getString(7));
+                cliM.setNumero(rs.getString(8));
+                cliM.setCidade(rs.getString(9));
+                cliM.setEstado(rs.getString(10));
+                cliM.setCep(rs.getString(11));
+                cliM.setCelular(rs.getString(12));
+                os.setCliente(cliM);
+                os.setNomeVeiculo(rs.getString(13));
+                os.setModeloVeiculo(rs.getString(14));
+                os.setMarcaVeiculo(rs.getString(15));
+                os.setCorVeiculo(rs.getString(16));
+                os.setPlacaVeiculo(rs.getString(17));
+                os.setMecanico(rs.getString(18));
+                os.setDefeitoReclamado(rs.getString(19));
+                os.setRelatoMecanico(rs.getString(20));
+                os.setDataChegada(rs.getString(21));
+                os.setDataEntrega(rs.getString(22));
+                os.setStatus(rs.getString(23));
+                list.add(os);
             }
             retorno = "Encontrado!";
             sucesso = true;
@@ -628,8 +712,8 @@ public class OsDao {
             sucesso = false;
         } finally {
             try {
-                if (rset != null) {
-                    rset.close();
+                if (rs != null) {
+                    rs.close();
                 }
                 if (ps != null) {
                     ps.close();
@@ -643,6 +727,6 @@ public class OsDao {
                 retorno = "Erro: " + e;
             }
         }
-        return obj;
+        return list;
     }
 }
