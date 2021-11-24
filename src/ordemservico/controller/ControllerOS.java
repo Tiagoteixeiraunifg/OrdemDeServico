@@ -1,16 +1,15 @@
 
 package ordemservico.controller;
 
-import java.text.ParseException;
+
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.text.DefaultFormatterFactory;
+import ordemservico.controller.helper.ControlaControlesViewHelper;
 import ordemservico.controller.helper.TabelaListaOsHelper;
+import ordemservico.dao.OsDao;
+import ordemservico.model.ClienteModel;
 import ordemservico.model.OrdemServicoModel;
-import ordemservico.service.OsSevice;
-import ordemservico.util.DocumentNumeric;
-import ordemservico.util.UtilMascaras;
+import ordemservico.model.PecaServicoModel;
+import ordemservico.service.OsService;
 import ordemservico.view.ViewOs;
 
 /**
@@ -20,40 +19,27 @@ import ordemservico.view.ViewOs;
 public class ControllerOS implements IController{
 
     private ViewOs viewOs;
-    private OsSevice osService;
+    private OsService osService;
     private OrdemServicoModel osModel;
+    private ControlaControlesViewHelper ControlsHelper;
+    private OsDao dao;
+    
+    
     
     @Override
     public void executa(Object objeto) {
         this.viewOs = (ViewOs) objeto;
-        osService = new OsSevice();
+        this.dao = new OsDao();
+        osService = new OsService(dao, new ClienteModel(), new PecaServicoModel(), new OrdemServicoModel());
         osModel = new OrdemServicoModel();
+        ControlsHelper = new ControlaControlesViewHelper(viewOs);
         carregaTabela(osService.findAll());
-        controleDigitacao();
-        adicianarMascaras();
+        ControlsHelper.habilitaBotoes(1);
+        ControlsHelper.controleJtext(false);
         //toda inicialização da jframe aqui
     }
     
-    private void controleDigitacao(){
-        viewOs.getjTextFieldCliCep().setDocument(new DocumentNumeric());
-        viewOs.getjTextFieldCliRG().setDocument(new DocumentNumeric());
-        viewOs.getjTextFieldCliCpf().setDocument(new DocumentNumeric());
-        viewOs.getjTextFieldQtd().setDocument(new DocumentNumeric());
-        viewOs.getjTextFieldTotalItem().setDocument(new DocumentNumeric());
-        viewOs.getjTextFieldValorUnItem().setDocument(new DocumentNumeric());
-    }
-    
-    private void adicianarMascaras(){
-        
-        try {
-            viewOs.getjTextFieldCliCelular().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraCelular(viewOs.getjTextFieldCliCelular())));
-            viewOs.getjTextFieldDataChegada().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraData(viewOs.getjTextFieldDataChegada())));
-            viewOs.getjTextFieldDataEntrega().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraData(viewOs.getjTextFieldDataEntrega())));
-        } catch (ParseException ex) {
-            
-        }
-    
-    }
+
     
     private void carregaTabela(ArrayList<OrdemServicoModel> list){
         TabelaListaOsHelper modelTable= new TabelaListaOsHelper(list);

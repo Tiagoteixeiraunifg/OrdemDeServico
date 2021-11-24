@@ -108,6 +108,23 @@ public class ClienteModel {
     public void setCelular(String celular) {
         this.celular = celular;
     }
+
+    public ClienteModel() {
+    }
+
+    
+    public ClienteModel(String nome, String cpf, String rg, String rua, String bairro, String numero, String cidade, String estado, String cep, String celular) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.rg = rg;
+        this.rua = rua;
+        this.bairro = bairro;
+        this.numero = numero;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.cep = cep;
+        this.celular = celular;
+    }
     
     
     

@@ -14,19 +14,20 @@ import ordemservico.model.PecaServicoModel;
  * Toda comunicação com a DAO e validação do objeto aqui
  * @author Tiago Teixeira
  */
-public class OsSevice {
+public class OsService {
        
     private OsDao dao;
     private ClienteModel cliModel;
     private PecaServicoModel pecModel;
     private OrdemServicoModel osModel;
     
-    public OsSevice() {
-        dao = new OsDao();
-        cliModel = new ClienteModel();
-        pecModel = new PecaServicoModel();
-        osModel = new OrdemServicoModel();
+    public OsService(OsDao dao, ClienteModel cliModel, PecaServicoModel pecModel, OrdemServicoModel osModel ) {
+        this.dao = dao;
+        this.cliModel = cliModel;
+        this.pecModel = pecModel;
+        this.osModel = osModel;
     }
+    
     
     public OrdemServicoModel findOsById(int Id){
         return dao.findById(Id, ConnectDb.getConexaoDAO());

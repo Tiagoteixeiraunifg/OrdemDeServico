@@ -322,6 +322,7 @@ public class OsDao {
      * @param obj
      * @return 
      */
+    
     public boolean update(ClienteModel obj, Connection conn)  {
         boolean ret = false;
         // variavel com a string do comando SQL para atualização dos dados na enticade

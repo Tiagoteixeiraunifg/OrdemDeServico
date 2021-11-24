@@ -138,6 +138,25 @@ public class OrdemServicoModel {
         this.status = status;
     }
 
+    public OrdemServicoModel(ClienteModel cliente, ArrayList<PecaServicoModel> pecasSevico, String nomeVeiculo, String modeloVeiculo, String marcaVeiculo, String corVeiculo, String placaVeiculo, String mecanico, String defeitoReclamado, String relatoMecanico, String dataChegada, String dataEntrega, String status) {
+        this.cliente = cliente;
+        this.pecasSevico = pecasSevico;
+        this.nomeVeiculo = nomeVeiculo;
+        this.modeloVeiculo = modeloVeiculo;
+        this.marcaVeiculo = marcaVeiculo;
+        this.corVeiculo = corVeiculo;
+        this.placaVeiculo = placaVeiculo;
+        this.mecanico = mecanico;
+        this.defeitoReclamado = defeitoReclamado;
+        this.relatoMecanico = relatoMecanico;
+        this.dataChegada = dataChegada;
+        this.dataEntrega = dataEntrega;
+        this.status = status;
+    }
+
+    public OrdemServicoModel() {
+    }
+
         
         
         

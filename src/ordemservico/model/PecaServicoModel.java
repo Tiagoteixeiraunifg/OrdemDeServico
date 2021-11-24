@@ -73,6 +73,18 @@ public class PecaServicoModel {
     public void setIdOrdem(int idOrdem) {
         this.idOrdem = idOrdem;
     }
+
+    public PecaServicoModel() {
+    }
+
+    public PecaServicoModel(int idOrdem, String tipo, String descricao, double quantidade, double valorUn, double valorTotal) {
+        this.idOrdem = idOrdem;
+        this.tipo = tipo;
+        this.descricao = descricao;
+        this.quantidade = quantidade;
+        this.valorUn = valorUn;
+        this.valorTotal = valorTotal;
+    }
     
     
     
