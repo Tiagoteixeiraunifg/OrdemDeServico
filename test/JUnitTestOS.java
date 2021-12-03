@@ -5,7 +5,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TestesDb.class
+    ModelClientAskDaoTest.class,
+    OrderServiceDaoTest.class,
+    ValidationMethodsTest.class,
+    ViewHelperTest.class
 })
 
 

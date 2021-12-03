@@ -2,7 +2,11 @@
 package ordemservico.controller;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import ordemservico.controller.helper.ControlaControlesViewHelper;
 import ordemservico.controller.helper.TabelaListaOsHelper;
 import ordemservico.dao.OsDao;
@@ -22,20 +26,22 @@ public class ControllerOS implements IController{
     private OsService osService;
     private OrdemServicoModel osModel;
     private ControlaControlesViewHelper ControlsHelper;
-    private OsDao dao;
+    private PecaServicoModel askServiceModel;
     
     
     
     @Override
     public void executa(Object objeto) {
         this.viewOs = (ViewOs) objeto;
-        this.dao = new OsDao();
-        osService = new OsService(dao, new ClienteModel(), new PecaServicoModel(), new OrdemServicoModel());
+        osService = new OsService();
         osModel = new OrdemServicoModel();
+        askServiceModel = new PecaServicoModel();
         ControlsHelper = new ControlaControlesViewHelper(viewOs);
         carregaTabela(osService.findAll());
         ControlsHelper.habilitaBotoes(1);
         ControlsHelper.controleJtext(false);
+        ControlsHelper.controleDigitacao();
+        ControlsHelper.adicianarMascaras();
         //toda inicialização da jframe aqui
     }
     
@@ -53,5 +59,13 @@ public class ControllerOS implements IController{
     
     public void jTextFiltroTabela(){
         pesquisarTabela(viewOs.getjTextFieldBusca().getText());
+    }
+    
+    public void salveItemLoose(PecaServicoModel obj){
+        try {
+            osService.saveItemServPec(obj);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(viewOs, "Erro ao Salvar: "+ ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

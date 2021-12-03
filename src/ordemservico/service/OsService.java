@@ -2,6 +2,8 @@
 package ordemservico.service;
 
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import ordemservico.OrdemServico;
 import ordemservico.dao.ConnectDb;
@@ -20,8 +22,16 @@ public class OsService {
     private ClienteModel cliModel;
     private PecaServicoModel pecModel;
     private OrdemServicoModel osModel;
+    private ConnectDb con;
+    
+    public OsService() {
+        con = new ConnectDb();
+    }
+    
+    
     
     public OsService(OsDao dao, ClienteModel cliModel, PecaServicoModel pecModel, OrdemServicoModel osModel ) {
+        con = new ConnectDb();
         this.dao = dao;
         this.cliModel = cliModel;
         this.pecModel = pecModel;
@@ -30,14 +40,56 @@ public class OsService {
     
     
     public OrdemServicoModel findOsById(int Id){
-        return dao.findById(Id, ConnectDb.getConexaoDAO());
+        return dao.findById(Id, con.getConexaoDAO());
     }
     
     public ArrayList<OrdemServicoModel> findByParameter(String parametro){
-        return dao.findAllParameter(parametro,ConnectDb.getConexaoDAO());
+        return dao.findAllParameter(parametro,con.getConexaoDAO());
     }
     
     public ArrayList<OrdemServicoModel> findAll(){
-        return dao.findAll(ConnectDb.getConexaoDAO());
+        return dao.findAll(con.getConexaoDAO());
     }
+    
+    public boolean saveItemServPec(PecaServicoModel obj) throws SQLException {
+        return dao.saveAskService(obj, con);
+    }
+    
+    public boolean saveOs(OrdemServicoModel obj, boolean clientNew) throws SQLException{
+        return dao.saveOsAskServiceClient(obj, clientNew, con);
+    }
+    
+    public OsDao getDao() {
+        return dao;
+    }
+
+    public void setDao(OsDao dao) {
+        this.dao = dao;
+    }
+
+    public ClienteModel getCliModel() {
+        return cliModel;
+    }
+
+    public void setCliModel(ClienteModel cliModel) {
+        this.cliModel = cliModel;
+    }
+
+    public PecaServicoModel getPecModel() {
+        return pecModel;
+    }
+
+    public void setPecModel(PecaServicoModel pecModel) {
+        this.pecModel = pecModel;
+    }
+
+    public OrdemServicoModel getOsModel() {
+        return osModel;
+    }
+
+    public void setOsModel(OrdemServicoModel osModel) {
+        this.osModel = osModel;
+    }
+    
+    
 }

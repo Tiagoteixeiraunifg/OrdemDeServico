@@ -139,15 +139,15 @@ public class Util {
         }
     }
 
-    public float formataMoeda(String arg) {
-        float number = 0;
+    public double formataMoeda(String arg) {
+        double number = 0;
         //obtem um NumberFormat para o Locale default (BR)
         try {
             NumberFormat nf = NumberFormat.getNumberInstance(new Locale("pt", "BR"));
             //converte um número com vírgulas ex: 2,56 para double/float a gosto de escolha
             
             nf.setMaximumFractionDigits(2);
-            number = nf.parse(arg).floatValue();
+            number = nf.parse(arg).doubleValue();
             // return number;
         } catch (ParseException e) {
         }

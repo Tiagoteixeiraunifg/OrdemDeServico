@@ -4,18 +4,70 @@ package ordemservico.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.activation.DataSource;
 
 /**
  * 
  * @author Tiago Teixeira
  */
 public class ConnectDb {
-    private static String status = "Não conectou...";
-    private static boolean Connected;
-    private static String schema;
+    private  String status = "Não conectou...";
+    private  boolean Connected;
+    private  String schema;
     
     
-    public static java.sql.Connection getConexaoDAO() {
+    
+    public  java.sql.Connection getConexaoDAO(Connection conn) {
+        
+               
+        try {
+            // Carregando o JDBC Driver padrão
+            String driverName = "com.mysql.cj.jdbc.Driver";
+            Class.forName(driverName);
+            // Configurando a nossa conexão //
+            String serverName = "localhost"; 
+            String mydatabase = "db_ordemservico";
+            String porta = "3306";
+            String url = "jdbc:mysql://" + serverName + ":"+porta+"/" + mydatabase + "?useTimezone=true&serverTimezone=UTC";
+            String username = "root";  
+            String password = "root";
+              
+            conn = DriverManager.getConnection(url, username, password);
+            
+            //Testa sua conexão//
+
+            if (conn != null) {
+                
+                schema = conn.getSchema();
+                status = ("STATUS--->Conectado com sucesso!");
+                Connected = true;
+
+            } else {
+
+                status = ("STATUS--->Não foi possivel realizar conexão");
+                Connected = false;
+
+            }
+
+            return conn;
+
+        } catch (ClassNotFoundException e) {
+            
+            System.out.println("O driver expecificado nao foi encontrado." + e);
+            
+            return null;
+            
+        } catch (SQLException e) {
+            
+            System.out.println("Nao foi possivel conectar ao Banco de Dados." + e);
+            
+            return null;
+
+        }
+
+    }
+    
+    public  java.sql.Connection getConexaoDAO() {
 
         Connection connection = null;  
 
@@ -67,18 +119,18 @@ public class ConnectDb {
     }
 
     //Método que retorna o status da sua conexão//
-    public static String statusConection()  {        
+    public  String statusConection()  {        
         return status;
     }
     
-    public static String bancoNome()  {              
+    public  String bancoNome()  {              
         return schema;
     }
 
     //Método que fecha sua conexão//
-    public static boolean FecharConexao()   {
+    public  boolean FecharConexao()   {
         try {
-            ConnectDb.getConexaoDAO().close();
+            getConexaoDAO().close();
             Connected = false;
             return true;
            
@@ -88,12 +140,12 @@ public class ConnectDb {
         }
     }
 
-    public static java.sql.Connection ReiniciarConexao()   {
+    public  java.sql.Connection ReiniciarConexao()   {
         FecharConexao();
-        return ConnectDb.getConexaoDAO();
+        return getConexaoDAO();
     }
 
-    public static boolean isConnected() {
+    public  boolean isConnected() {
         return Connected;
     }
 }

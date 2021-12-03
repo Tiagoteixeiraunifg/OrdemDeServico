@@ -19,8 +19,7 @@ public class ControlaControlesViewHelper {
    
     public ControlaControlesViewHelper(Object view) {
         this.view = (ViewOs) view;
-        controleDigitacao();
-        adicianarMascaras();
+
     }
     /**
      * tipo 1 iniciando, tipo 2 novo, 3 buscando
@@ -124,7 +123,7 @@ public class ControlaControlesViewHelper {
     }
     
     
-    private void controleDigitacao(){
+    public void controleDigitacao(){
         view.getjTextFieldCliCep().setDocument(new DocumentNumeric());
         view.getjTextFieldCliRG().setDocument(new DocumentNumeric());
         view.getjTextFieldCliCpf().setDocument(new DocumentNumeric());
@@ -134,7 +133,7 @@ public class ControlaControlesViewHelper {
     }
     
     
-    private void adicianarMascaras(){
+    public void adicianarMascaras(){
         
         try {
             view.getjTextFieldCliCelular().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraCelular(view.getjTextFieldCliCelular())));

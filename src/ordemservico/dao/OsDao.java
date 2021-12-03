@@ -1,12 +1,14 @@
 
 package ordemservico.dao;
 
+import com.fasterxml.jackson.databind.util.ClassUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import javax.sql.DataSource;
 import ordemservico.model.ClienteModel;
 import ordemservico.model.OrdemServicoModel;
 import ordemservico.model.PecaServicoModel;
@@ -43,225 +45,240 @@ public class OsDao {
      * @param obj
      * @param clienteNovo 
      */
-    public  void save(OrdemServicoModel obj, boolean clienteNovo, Connection conn)  {
+    public boolean saveOsAskServiceClient(OrdemServicoModel obj, boolean clienteNovo, ConnectDb conn) throws SQLException{
         // variavel com a string do comando SQL para inserção de dados
-        String sql = ""; // salvar Ordem de Serviço
-        String sql_1 = "";  //pega o id da OS para lancar os produtos relacionados
-        String sql_2 = ""; // salvar Itens da Ordem de Serviço
-
+        String sql = "INSERT INTO ordemservico(nomeVeiculo,modeloVeiculo,marcaVeiculo,corVeiculo,placaVeiculo,"
+                   + " mecanico,defeitoreclamado,relatomecanico,datachegada,dataentrega,id_cliente,status)"
+                   + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"; // salvar Ordem de Serviço
+        String sql_1 = "select max(id) as os from ordemservico";  //pega o id da OS para lancar os produtos relacionados
+        
+        String sql_2 = "INSERT INTO itens_ordemservico(id_ordem,tipo,descricao,quantidade,valor_un,valor_total)VALUES(?,?,?,?,?,?)"; // salvar Itens da Ordem de Serviço
 
         PreparedStatement ps = null; // salvar Ordem de Serviço
         PreparedStatement ps2 = null; // pegar id retornado
         PreparedStatement ps3 = null; // salvar Itens da Ordem de Serviço
         ResultSet rs;
 
-        try {
-            conn = ConnectDb.getConexaoDAO();
-            ps = conn.prepareStatement(sql);
-            
+            ps = conn.getConexaoDAO().prepareStatement(sql);
             if (clienteNovo) {
-                save(obj.getCliente(), conn);
+                sucesso = saveClient(obj.getCliente(), conn);
                 obj.getCliente().setIdCliente(idRetornadoCli);
-                if(sucesso){
-                    for (PecaServicoModel item : obj.getPecasSevico()) {
-                        ps3 = conn.prepareStatement(sql_2);
-                        ps3.setInt(1, idRetornadoOs);
-                        ps3.setString(2, item.getTipo());
-                        ps3.setString(3, item.getDescricao());
-                        ps3.setDouble(4, item.getQuantidade());
-                        ps3.setDouble(5, item.getValorUn());
-                        ps3.setDouble(6, item.getValorTotal());
-                        ps3.execute();
-                        sucesso = true;
-                    }      
-                }
-            } else {
-                //atualizando o cliente com novas informações
-                update(obj.getCliente(), conn);
-                //adicionando os valores de acordo a ordem dos parametros do string sql
-                ps.setString(1, obj.getNomeVeiculo());
-                ps.setString(2, obj.getModeloVeiculo());
-                ps.setString(3, obj.getMarcaVeiculo());
-                ps.setString(4, obj.getCorVeiculo());
-                ps.setString(5, obj.getPlacaVeiculo());
-                ps.setString(6, obj.getMecanico());
-                ps.setString(7, obj.getDefeitoReclamado());
-                ps.setString(8, obj.getRelatoMecanico());
-                ps.setString(9, obj.getDataChegada());
-                ps.setString(10, obj.getDataEntrega());
-                ps.setInt(11, obj.getCliente().getIdCliente());
-                ps.setString(12, obj.getStatus());
-                //executando a instrução com os parametro setados
-                ps.execute();
-                sucesso = true;
-                retorno = "Salvou OS";
                 if (sucesso) {
-                    ps2 = conn.prepareStatement(sql_1);
-                    rs = ps2.executeQuery();
-                    while (rs.next()) {
-                        //pega o Id da linha inserida para adicionar as pecas e servicos no Db Relacional
-                        this.idRetornadoOs = rs.getInt(1);
+                    ps.setString(1, obj.getNomeVeiculo());
+                    ps.setString(2, obj.getModeloVeiculo());
+                    ps.setString(3, obj.getMarcaVeiculo());
+                    ps.setString(4, obj.getCorVeiculo());
+                    ps.setString(5, obj.getPlacaVeiculo());
+                    ps.setString(6, obj.getMecanico());
+                    ps.setString(7, obj.getDefeitoReclamado());
+                    ps.setString(8, obj.getRelatoMecanico());
+                    ps.setString(9, obj.getDataChegada());
+                    ps.setString(10, obj.getDataEntrega());
+                    ps.setInt(11, obj.getCliente().getIdCliente());
+                    ps.setString(12, obj.getStatus());
+                    //executando a instrução com os parametro setados
+                    sucesso = ps.execute();
+                    
+                    if (sucesso) {
+                        retorno = "Salvou OS";
+                        ps2 = conn.getConexaoDAO().prepareStatement(sql_1);
+                        rs = null;
+                        rs = ps2.executeQuery();
+                        while (rs.next()) {
+                            //pega o Id da linha inserida para adicionar as pecas e servicos no Db Relacional
+                            this.idRetornadoOs = rs.getInt(1);
+                            sucesso = (idRetornadoOs != 0) ? true : false;
+                        }
+                        rs.close();
                     }
-                    sucesso = (idRetornadoOs != 0) ? true : false;
+                    if (sucesso) {
+                        for (PecaServicoModel item : obj.getPecasSevico()) {
+                            ps3 = conn.getConexaoDAO().prepareStatement(sql_2);
+                            ps3.setInt(1, idRetornadoOs);
+                            ps3.setString(2, item.getTipo());
+                            ps3.setString(3, item.getDescricao());
+                            ps3.setDouble(4, item.getQuantidade());
+                            ps3.setDouble(5, item.getValorUn());
+                            ps3.setDouble(6, item.getValorTotal());
+                            ps3.execute();
+                            sucesso = true;
+                        }
+                    }
+                }               
+            } else { // aqui é caso o cliente não seja novo, ele atualiza e segue
+                
+                //atualizando o cliente com novas informações
+                sucesso = updateClient(obj.getCliente(), conn);
+                if (sucesso) {
+                    //adicionando os valores de acordo a ordem dos parametros do string sql
+                    ps.setString(1, obj.getNomeVeiculo());
+                    ps.setString(2, obj.getModeloVeiculo());
+                    ps.setString(3, obj.getMarcaVeiculo());
+                    ps.setString(4, obj.getCorVeiculo());
+                    ps.setString(5, obj.getPlacaVeiculo());
+                    ps.setString(6, obj.getMecanico());
+                    ps.setString(7, obj.getDefeitoReclamado());
+                    ps.setString(8, obj.getRelatoMecanico());
+                    ps.setString(9, obj.getDataChegada());
+                    ps.setString(10, obj.getDataEntrega());
+                    ps.setInt(11, obj.getCliente().getIdCliente());
+                    ps.setString(12, obj.getStatus());
+                    //executando a instrução com os parametro setados
+                    sucesso = ps.execute();
+                  
+                    if (sucesso) {
+                        retorno = "Salvou OS";
+                        ps2 = conn.getConexaoDAO().prepareStatement(sql_1);
+                        rs = null;
+                        rs = ps2.executeQuery();
+                        while (rs.next()) {
+                            //pega o Id da linha inserida para adicionar as pecas e servicos no Db Relacional
+                            this.idRetornadoOs = rs.getInt(1);
+                            sucesso = (idRetornadoOs != 0) ? true : false;
+                        }
+                        
+                    }
+                    if (sucesso) {
+                        for (PecaServicoModel item : obj.getPecasSevico()) {
+                            ps3 = conn.getConexaoDAO().prepareStatement(sql_2);
+                            ps3.setInt(1, idRetornadoOs);
+                            ps3.setString(2, item.getTipo());
+                            ps3.setString(3, item.getDescricao());
+                            ps3.setDouble(4, item.getQuantidade());
+                            ps3.setDouble(5, item.getValorUn());
+                            ps3.setDouble(6, item.getValorTotal());
+                            ps3.execute();
+                            sucesso = true;
+                        }
+                    }
                 }
-                if(sucesso){
-
-                    for (PecaServicoModel item : obj.getPecasSevico()) {
-                        ps3 = conn.prepareStatement(sql_2);
-                        ps3.setInt(1, idRetornadoOs);
-                        ps3.setString(2, item.getTipo());
-                        ps3.setString(3, item.getDescricao());
-                        ps3.setDouble(4, item.getValorUn());
-                        ps3.setDouble(5, item.getValorTotal());
-                        ps3.execute();
-                        sucesso = true;
-                    }      
-                }
-            }        
-            retorno = "Gravado com sucesso!";
-            sucesso = true;
-        } catch (SQLException e) {
-            retorno = "Erro ao : " + e.getMessage();
-            sucesso = false;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();              
-                }
-                if (ps2 != null) {
-                    ps2.close();
-                }
-                if (ps3 != null) {
-                    ps3.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                    ConnectDb.FecharConexao();
-                }
-            } catch (SQLException e) {
-                retorno = "Erro ao fechar conexões: " + e;
+                retorno = "Gravado com sucesso!";
+                sucesso = true;
             }
+
+        if (ps != null) {
+            ps.close();
         }
+        if (ps2 != null) {
+            ps2.close();
+        }
+        if (ps3 != null) {
+            ps3.close();
+        }
+        if (conn != null) {
+            conn.FecharConexao();
+        }
+
+        return sucesso;
     }
     
     /**
      * salva o cliente a partir do metodo principal de save(OrdemServicoModel obj) caso não tiver o cadastro;
      * @param obj 
      */
-    public  void save(ClienteModel obj, Connection conn)  {
+    public boolean saveClient(ClienteModel obj, ConnectDb conn) throws SQLException{
         // variavel com a string do comando SQL para inserção de dados
-        String sql = ""; // salvar cliente
-        String sqlIdRetorno = "";
-        
+        String sql = "INSERT INTO cliente(nome,cpf,rg,rua,bairro,numero,cidade,estado,cep,celular)VALUES(?,?,?,?,?,?,?,?,?,?)"; // salvar cliente
+        String sqlIdRetorno = "select max(id) as id from cliente";
+
         PreparedStatement ps = null; // salvar Ordem de Serviço
         PreparedStatement ps2 = null;
         ResultSet rs;
 
-        try {
-            conn = ConnectDb.getConexaoDAO();
-            ps = conn.prepareStatement(sql);
-            //adicionando os valores de acordo a ordem dos parametros do string sql
-            ps.setString(1, obj.getNome());
-            ps.setString(2, obj.getCpf());
-            ps.setString(3, obj.getRg());
-            ps.setString(4, obj.getRua());
-            ps.setString(5, obj.getBairro());
-            ps.setString(6, obj.getNumero());
-            ps.setString(7, obj.getCidade());
-            ps.setString(8, obj.getEstado());
-            ps.setString(9, obj.getCep());
-            ps.setString(10, obj.getCelular());
-            //executando a instrução com os parametro setados
-            ps.execute();
-            
-            
-            ps2 = conn.prepareStatement(sqlIdRetorno);
+        ps = conn.getConexaoDAO().prepareStatement(sql);
+        //adicionando os valores de acordo a ordem dos parametros do string sql
+        ps.setString(1, obj.getNome());
+        ps.setString(2, obj.getCpf());
+        ps.setString(3, obj.getRg());
+        ps.setString(4, obj.getRua());
+        ps.setString(5, obj.getBairro());
+        ps.setString(6, obj.getNumero());
+        ps.setString(7, obj.getCidade());
+        ps.setString(8, obj.getEstado());
+        ps.setString(9, obj.getCep());
+        ps.setString(10, obj.getCelular());
+        //executando a instrução com os parametro setados
+        sucesso = ps.execute();
+
+        if (sucesso) {
+            ps2 = conn.getConexaoDAO().prepareStatement(sqlIdRetorno);
+            rs = null;
             rs = ps2.executeQuery();
             while (rs.next()) {
                 //pega o Id da linha inserida para adicionar as pecas e servicos no Db Relacional
-                idRetornadoCli =rs.getInt(1);
+                idRetornadoCli = rs.getInt(1);
             }
-                                    
+            rs.close();
             retorno = "Gravado com sucesso!";
-            sucesso = true;
-        } catch (SQLException e) {
-            retorno = "Erro ao : " + e.getMessage();
-            sucesso = false;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (ps2 != null) {
-                    ps2.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                    ConnectDb.FecharConexao();
-                }
-            } catch (SQLException e) {
-                retorno = "Erro ao fechar conexões: " + e;
-            }
+        } else {
+            retorno = "Erro ao gravar!";  
         }
+
+        if (ps != null) {
+            ps.close();
+        }
+        if (ps2 != null) {
+            ps2.close();
+        }
+        if (conn != null) {
+            conn.FecharConexao();
+        }
+            
+        return sucesso;
     }
     
     /**
      * Insere de forma individual o item no banco, usado para adicinar novos itens a OS já salvas e em modo de edição.
      * @param obj 
      */
-    public void save(PecaServicoModel obj, Connection conn) {
+    public boolean saveAskService(PecaServicoModel obj, ConnectDb conn) throws SQLException{
+        sucesso = false;
         // variavel com a string do comando SQL para inserção de dados
-        String sql = ""; // salvar cliente
+        String sql = "INSERT INTO itens_ordemservico(id_ordem,tipo,descricao,quantidade,valor_un,valor_total)VALUES(?,?,?,?,?,?)"; // salvar peça
 
         PreparedStatement ps = null; // salvar Ordem de Serviço
+        //when(mockconn.prepareStatement(anyString())).thenReturn(psMock);
+        ps = conn.getConexaoDAO().prepareStatement(sql);
 
-        try {
-            conn = ConnectDb.getConexaoDAO();
-
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, obj.getIdOrdem());
-            ps.setString(2, obj.getTipo());
-            ps.setString(3, obj.getDescricao());
-            ps.setDouble(4, obj.getQuantidade());
-            ps.setDouble(5, obj.getValorUn());
-            ps.setDouble(6, obj.getValorTotal());
-            ps.execute();
-            
-            retorno = "Gravado com sucesso!";
-            sucesso = true;
-        } catch (SQLException e) {
-            retorno = "Erro ao : " + e.getMessage();
-            sucesso = false;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                    ConnectDb.FecharConexao();
-                }
-            } catch (SQLException e) {
-                retorno = "Erro ao fechar conexões: " + e;
-            }
+        ps.setInt(1, obj.getIdOrdem());
+        ps.setString(2, obj.getTipo());
+        ps.setString(3, obj.getDescricao());
+        ps.setDouble(4, obj.getQuantidade());
+        ps.setDouble(5, obj.getValorUn());
+        ps.setDouble(6, obj.getValorTotal());
+        sucesso = ps.execute();
+        
+        if(sucesso){
+           retorno = "Gravado com sucesso!"; 
+        }else{
+           retorno = "Erro ao gravar!";  
         }
+        
+        if (ps != null) {
+            ps.close();
+        }
+        if (conn != null) {
+            conn.FecharConexao();
+        }
+        return sucesso;
     }
     
     /**
      * Ao usar a função ele atualiza em cascata todas as informações relacionadas a essa ordem de serviço
      * @param obj 
      */
-    public void update(OrdemServicoModel obj, Connection conn) {
+    public boolean updateOs(OrdemServicoModel obj, ConnectDb conn) throws SQLException{
         // variavel com a string do comando SQL para atualização dos dados na enticade
-        String sql = ""; // atualiza Ordem de Serviço
-        String sql_1 = "";  //atualiza Itens da ordem de serviço
+        String sql = "update ordemservico set nomeVeiculo = ?,modeloVeiculo = ?,marcaVeiculo = ?,"
+                   + " corVeiculo = ?,placaVeiculo = ?,mecanico = ?,defeitoreclamado = ?,relatomecanico = ?,"
+                   + " datachegada = ?,dataentrega = ?,id_cliente = ?,status = ? where id  = ?"; // atualiza Ordem de Serviço
+        String sql_1 = "update itens_ordemservico set id_ordem = ?,tipo = ?,descricao = ?,quantidade = ?,valor_un = ?,valor_total = ? where id  = ?";  //atualiza Itens da ordem de serviço
 
         PreparedStatement ps = null; // atualiza Ordem de Serviço
         PreparedStatement ps2 = null; //atualiza Itens da ordem de serviço
 
         try {
-            conn = ConnectDb.getConexaoDAO();
-            ps = conn.prepareStatement(sql);
+            ps = conn.getConexaoDAO().prepareStatement(sql);
 
             ps.setString(1, obj.getNomeVeiculo());
             ps.setString(2, obj.getModeloVeiculo());
@@ -282,7 +299,7 @@ public class OsDao {
             retorno = "atualizou OS";
 
             for (PecaServicoModel item : obj.getPecasSevico()) {
-                ps2 = conn.prepareStatement(sql_1);
+                ps2 = conn.getConexaoDAO().prepareStatement(sql_1);
                 ps2.setInt(1, obj.getIdOrdem());
                 ps2.setString(2, item.getTipo());
                 ps2.setString(3, item.getDescricao());
@@ -295,7 +312,7 @@ public class OsDao {
             }
              
             retorno = retorno + "Atualizado lista de itens!";
-            sucesso = update(obj.getCliente(),conn); // aqui atualiza o cliente.
+            sucesso = updateClient(obj.getCliente(),conn); // aqui atualiza o cliente.
         } catch (SQLException e) {
             retorno = "Erro ao : " + e.getMessage();
             sucesso = false;
@@ -308,13 +325,13 @@ public class OsDao {
                     ps2.close();
                 }
                 if (conn != null) {
-                    conn.close();
-                    ConnectDb.FecharConexao();
+                    conn.FecharConexao();
                 }
             } catch (SQLException e) {
                 retorno = "Erro fechar conexão: " + e;
             }
         }
+        return sucesso;
     }
     
     /**
@@ -322,69 +339,59 @@ public class OsDao {
      * @param obj
      * @return 
      */
-    
-    public boolean update(ClienteModel obj, Connection conn)  {
+    public boolean updateClient(ClienteModel obj, ConnectDb conn) throws SQLException {
         boolean ret = false;
         // variavel com a string do comando SQL para atualização dos dados na enticade
-        String sql = "";
-        
+        String sql = "update cliente set nome = ?,cpf = ?,rg = ?,rua = ?,bairro = ?,numero = ?,"
+                + " cidade = ?,estado = ?,cep = ?,celular = ? where id  = ?";
+
         PreparedStatement ps = null;
-               
-        try {
-            conn = ConnectDb.getConexaoDAO();
-            ps = conn.prepareStatement(sql);
-            //adicionando os valores de acordo a ordem dos parametros do string sql
-            ps.setString(1, obj.getNome());
-            ps.setString(2, obj.getCpf());
-            ps.setString(3, obj.getRg());
-            ps.setString(4, obj.getRua());
-            ps.setString(5, obj.getBairro());
-            ps.setString(6, obj.getNumero());
-            ps.setString(7, obj.getCidade());
-            ps.setString(8, obj.getEstado());
-            ps.setString(9, obj.getCep());
-            ps.setString(10, obj.getCelular());
-            ps.setInt(11, obj.getIdCliente());
-            //executando a instrução com os parametro setados
-            ps.execute();
-             
+
+        ps = conn.getConexaoDAO().prepareStatement(sql);
+        //adicionando os valores de acordo a ordem dos parametros do string sql
+        ps.setString(1, obj.getNome());
+        ps.setString(2, obj.getCpf());
+        ps.setString(3, obj.getRg());
+        ps.setString(4, obj.getRua());
+        ps.setString(5, obj.getBairro());
+        ps.setString(6, obj.getNumero());
+        ps.setString(7, obj.getCidade());
+        ps.setString(8, obj.getEstado());
+        ps.setString(9, obj.getCep());
+        ps.setString(10, obj.getCelular());
+        ps.setInt(11, obj.getIdCliente());
+        //executando a instrução com os parametro setados
+        sucesso = ps.execute();
+
+        if (sucesso) {
             retorno = "Atualizado com sucesso!";
-            sucesso = true;
-            ret = true;
-        } catch (SQLException e) {
-            retorno = "Erro ao : " + e.getMessage();
-            sucesso = false;
-            ret = false;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                    ConnectDb.FecharConexao();
-                }
-            } catch (SQLException e) {
-                retorno = "Erro fechar conexão: " + e;
-            }
+        } else {
+            retorno = "Erro ao atualizar!";
+        }
+
+        if (ps != null) {
+            ps.close();
+        }
+        if (conn != null) {
+            conn.FecharConexao();
         }
         return ret;
     }
-    
     
     /**
      * atualiza o item na lista de peca e servico da ordem de servico
      * @param obj 
      */
-    public void update(PecaServicoModel obj, Connection conn)  {
+    public boolean updateAskService(PecaServicoModel obj, Connection conn)  {
         // variavel com a string do comando SQL para atualização dos dados na enticade
-        String sql = "";
+        String sql = "update itens_ordemservico set id_ordem = ?,tipo = ?,descricao = ?,"
+                   + " quantidade = ?,valor_un = ?,valor_total = ? where id  = ?";
         
 
         PreparedStatement ps = null;
                
         try {
-            conn = ConnectDb.getConexaoDAO();
+            
             ps = conn.prepareStatement(sql);
 
             //adicionando os valores de acordo a ordem dos parametros do string sql
@@ -413,20 +420,19 @@ public class OsDao {
                 }
                 if (conn != null) {
                     conn.close();
-                    ConnectDb.FecharConexao();
                 }
             } catch (SQLException e) {
                 retorno = "Erro fechar conexão: " + e;
             }
         }
+        return sucesso;
     }
-    
     
     /**
      * deleta os itens e a ordem de servico com o parametro IdOrdem inserido
      * @param parametro 
      */
-    public void deleteById(int parametro, Connection conn) {
+    public boolean deleteById(int parametro, Connection conn) {
         // variavel com a string do comando SQL para atualização dos dados na enticade Colaborador
         String sql = "delete from itens_ordemserrvico where id_ordem = ?";
         String sql2 = "delete from ordemservico where id = ?";
@@ -434,7 +440,6 @@ public class OsDao {
         PreparedStatement ps1 = null;
 
         try {
-            conn = ConnectDb.getConexaoDAO();
             ps1 = conn.prepareStatement(sql);
             //adicionando os valores de acordo a ordem dos parametros do string sql
             ps1.setInt(1, parametro);
@@ -462,12 +467,12 @@ public class OsDao {
                 }
                 if (conn != null) {
                     conn.close();
-                    ConnectDb.FecharConexao();
                 }
             } catch (SQLException e) {
                 retorno = "Erro : " + e;
             }
         }
+        return sucesso;
     }
 
     /**
@@ -488,7 +493,6 @@ public class OsDao {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {           
-            conn = ConnectDb.getConexaoDAO();
             ps = conn.prepareStatement(sql);
             ps.setInt(1, idOs);
             rs = ps.executeQuery();
@@ -554,7 +558,6 @@ public class OsDao {
                 }
                 if (conn != null) {
                     conn.close();
-                    ConnectDb.FecharConexao();
                 }
             } catch (SQLException e) {
                 retorno = "Erro: " + e;
@@ -568,7 +571,6 @@ public class OsDao {
      * traz toda a lista de Os cadastradas no banco de dados, para usar no carregamento da tabela do sistema.
      * @return 
      */
-    
     public ArrayList<OrdemServicoModel> findAll(Connection conn)  {
 
         ArrayList<OrdemServicoModel> list = new ArrayList<OrdemServicoModel>();
@@ -587,7 +589,6 @@ public class OsDao {
         ResultSet rs = null;
 
         try {
-            conn = ConnectDb.getConexaoDAO();
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             
@@ -636,7 +637,6 @@ public class OsDao {
                 }
                 if (conn != null) {
                     conn.close();
-                    ConnectDb.FecharConexao();
                 }
 
             } catch (SQLException e) {
@@ -672,7 +672,6 @@ public class OsDao {
         ResultSet rs = null;
 
         try {
-            conn = ConnectDb.getConexaoDAO();
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             
@@ -721,7 +720,6 @@ public class OsDao {
                 }
                 if (conn != null) {
                     conn.close();
-                    ConnectDb.FecharConexao();
                 }
 
             } catch (SQLException e) {
