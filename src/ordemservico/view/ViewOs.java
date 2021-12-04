@@ -38,12 +38,12 @@ public class ViewOs extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanelCadastro = new javax.swing.JPanel();
         jPanelCliente = new javax.swing.JPanel();
-        jTextFieldCliCpf = new javax.swing.JTextField();
         jTextFieldCliNome = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jTextFieldCliRG = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        jTextFieldCliCpf = new javax.swing.JFormattedTextField();
         jPanelEndCliente = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jTextFieldCliRua = new javax.swing.JTextField();
@@ -182,8 +182,8 @@ public class ViewOs extends javax.swing.JFrame {
                     .addComponent(jTextFieldCliNome, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelClienteLayout.createSequentialGroup()
                         .addGroup(jPanelClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldCliCpf, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
+                            .addComponent(jLabel2)
+                            .addComponent(jTextFieldCliCpf, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanelClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
@@ -198,8 +198,8 @@ public class ViewOs extends javax.swing.JFrame {
                     .addComponent(jLabel4))
                 .addGap(2, 2, 2)
                 .addGroup(jPanelClienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldCliCpf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldCliRG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldCliRG, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldCliCpf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addGap(0, 0, 0)
@@ -454,6 +454,16 @@ public class ViewOs extends javax.swing.JFrame {
         jLabel22.setText("Valor Un");
 
         jTextFieldValorUnItem.setText("R$0,00");
+        jTextFieldValorUnItem.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldValorUnItemFocusLost(evt);
+            }
+        });
+        jTextFieldValorUnItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldValorUnItemKeyPressed(evt);
+            }
+        });
 
         jTextFieldTotalItem.setText("R$0,00");
 
@@ -466,6 +476,11 @@ public class ViewOs extends javax.swing.JFrame {
         jLabel25.setText("Tipo Item");
 
         jButtonAddItem.setText("Adicionar");
+        jButtonAddItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddItemActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelPecaServCadLayout = new javax.swing.GroupLayout(jPanelPecaServCad);
         jPanelPecaServCad.setLayout(jPanelPecaServCadLayout);
@@ -617,6 +632,11 @@ public class ViewOs extends javax.swing.JFrame {
         jPanel1.add(jTabbedPaneSeparacao, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 91, -1, 701));
 
         jButtonNovo.setText("NOVO");
+        jButtonNovo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonNovoActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButtonNovo, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 90, 63));
 
         jButtonExcluir.setText("EXCLUIR");
@@ -648,7 +668,7 @@ public class ViewOs extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonImprimirActionPerformed
 
     private void jButtonGravarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGravarActionPerformed
-        // TODO add your handling code here:
+        controller.jButtonGravar();
     }//GEN-LAST:event_jButtonGravarActionPerformed
 
     private void jTextFieldCliCepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldCliCepActionPerformed
@@ -658,6 +678,24 @@ public class ViewOs extends javax.swing.JFrame {
     private void jTextFieldBuscaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldBuscaKeyReleased
         controller.jTextFiltroTabela();
     }//GEN-LAST:event_jTextFieldBuscaKeyReleased
+
+    private void jButtonNovoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonNovoActionPerformed
+        controller.jButtonNovo();
+    }//GEN-LAST:event_jButtonNovoActionPerformed
+
+    private void jButtonAddItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddItemActionPerformed
+        controller.jButtonAdd();
+    }//GEN-LAST:event_jButtonAddItemActionPerformed
+
+    private void jTextFieldValorUnItemFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldValorUnItemFocusLost
+        controller.jTextValorUn();
+    }//GEN-LAST:event_jTextFieldValorUnItemFocusLost
+
+    private void jTextFieldValorUnItemKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldValorUnItemKeyPressed
+        if(evt.getKeyCode() == evt.VK_ENTER){
+            controller.jTextValorUn();
+        }
+    }//GEN-LAST:event_jTextFieldValorUnItemKeyPressed
 
     public JButton getjButtonAddItem() {
         return jButtonAddItem;
@@ -779,11 +817,11 @@ public class ViewOs extends javax.swing.JFrame {
         this.jTextFieldCliCidade = jTextFieldCliCidade;
     }
 
-    public JTextField getjTextFieldCliCpf() {
+    public JFormattedTextField getjTextFieldCliCpf() {
         return jTextFieldCliCpf;
     }
 
-    public void setjTextFieldCliCpf(JTextField jTextFieldCliCpf) {
+    public void setjTextFieldCliCpf(JFormattedTextField jTextFieldCliCpf) {
         this.jTextFieldCliCpf = jTextFieldCliCpf;
     }
 
@@ -991,7 +1029,7 @@ public class ViewOs extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField jTextFieldCliCelular;
     private javax.swing.JTextField jTextFieldCliCep;
     private javax.swing.JTextField jTextFieldCliCidade;
-    private javax.swing.JTextField jTextFieldCliCpf;
+    private javax.swing.JFormattedTextField jTextFieldCliCpf;
     private javax.swing.JTextField jTextFieldCliEstado;
     private javax.swing.JTextField jTextFieldCliNome;
     private javax.swing.JTextField jTextFieldCliNumero;

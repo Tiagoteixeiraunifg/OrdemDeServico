@@ -214,8 +214,8 @@
                                   <Component id="jTextFieldCliNome" min="-2" pref="302" max="-2" attributes="0"/>
                                   <Group type="102" alignment="1" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jTextFieldCliCpf" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
-                                          <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jTextFieldCliCpf" min="-2" pref="125" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="32767" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -237,8 +237,8 @@
                               </Group>
                               <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jTextFieldCliCpf" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jTextFieldCliRG" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jTextFieldCliCpf" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
@@ -250,8 +250,6 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JTextField" name="jTextFieldCliCpf">
-                    </Component>
                     <Component class="javax.swing.JTextField" name="jTextFieldCliNome">
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -270,6 +268,8 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="RG"/>
                       </Properties>
+                    </Component>
+                    <Component class="javax.swing.JFormattedTextField" name="jTextFieldCliCpf">
                     </Component>
                   </SubComponents>
                 </Container>
@@ -826,6 +826,10 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="R$0,00"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextFieldValorUnItemFocusLost"/>
+                        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextFieldValorUnItemKeyPressed"/>
+                      </Events>
                     </Component>
                     <Component class="javax.swing.JTextField" name="jTextFieldTotalItem">
                       <Properties>
@@ -864,6 +868,9 @@
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Adicionar"/>
                       </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonAddItemActionPerformed"/>
+                      </Events>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -928,6 +935,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="NOVO"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonNovoActionPerformed"/>
+          </Events>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
               <AbsoluteConstraints x="6" y="6" width="90" height="63"/>

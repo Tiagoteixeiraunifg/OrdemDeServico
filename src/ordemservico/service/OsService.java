@@ -26,6 +26,7 @@ public class OsService {
     
     public OsService() {
         con = new ConnectDb();
+        this.dao = new OsDao();
     }
     
     
@@ -47,8 +48,8 @@ public class OsService {
         return dao.findAllParameter(parametro,con.getConexaoDAO());
     }
     
-    public ArrayList<OrdemServicoModel> findAll(){
-        return dao.findAll(con.getConexaoDAO());
+    public ArrayList<OrdemServicoModel> findAll() throws SQLException{
+        return dao.findAll(con);
     }
     
     public boolean saveItemServPec(PecaServicoModel obj) throws SQLException {

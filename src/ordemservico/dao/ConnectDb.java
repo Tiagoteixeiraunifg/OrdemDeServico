@@ -4,7 +4,7 @@ package ordemservico.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import javax.activation.DataSource;
+
 
 /**
  * 
@@ -142,7 +142,7 @@ public class ConnectDb {
 
     public  java.sql.Connection ReiniciarConexao()   {
         FecharConexao();
-        return getConexaoDAO();
+        return this.getConexaoDAO();
     }
 
     public  boolean isConnected() {

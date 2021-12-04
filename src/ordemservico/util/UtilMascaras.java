@@ -17,7 +17,7 @@ public class UtilMascaras {
         mask = new MaskFormatter("(##)####-####");
         mask.setOverwriteMode(true);
         mask.setValidCharacters("0123456789");
-        mask.setPlaceholderCharacter('_');
+        //mask.setPlaceholderCharacter('_');
         mask.install(textfield);
         return mask;
     }
@@ -27,7 +27,7 @@ public class UtilMascaras {
         mask = new MaskFormatter("(##)#####-####");
         mask.setOverwriteMode(true);
         mask.setValidCharacters("0123456789");
-        mask.setPlaceholderCharacter('_');
+        //mask.setPlaceholderCharacter('_');
         mask.install(textfield);
         return mask;
     }
@@ -37,7 +37,7 @@ public class UtilMascaras {
         mask = new MaskFormatter("###.###.###-##");
         mask.setOverwriteMode(true);
         mask.setValidCharacters("0123456789");
-        mask.setPlaceholderCharacter('_');
+        //mask.setPlaceholderCharacter('');
         mask.install(textfield);
         return mask;
     }
@@ -70,7 +70,7 @@ public class UtilMascaras {
         mask = new MaskFormatter("##/##/####");
         mask.setOverwriteMode(true);
         mask.setValidCharacters("0123456789");
-        mask.setPlaceholderCharacter('_');
+        //mask.setPlaceholderCharacter('_');
         mask.install(textfield);
         return mask;
     }

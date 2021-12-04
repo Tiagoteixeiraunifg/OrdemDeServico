@@ -126,7 +126,6 @@ public class ControlaControlesViewHelper {
     public void controleDigitacao(){
         view.getjTextFieldCliCep().setDocument(new DocumentNumeric());
         view.getjTextFieldCliRG().setDocument(new DocumentNumeric());
-        view.getjTextFieldCliCpf().setDocument(new DocumentNumeric());
         view.getjTextFieldQtd().setDocument(new DocumentNumeric());
         view.getjTextFieldTotalItem().setDocument(new DocumentNumeric());
         view.getjTextFieldValorUnItem().setDocument(new DocumentNumeric());
@@ -139,9 +138,30 @@ public class ControlaControlesViewHelper {
             view.getjTextFieldCliCelular().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraCelular(view.getjTextFieldCliCelular())));
             view.getjTextFieldDataChegada().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraData(view.getjTextFieldDataChegada())));
             view.getjTextFieldDataEntrega().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraData(view.getjTextFieldDataEntrega())));
+            view.getjTextFieldCliCpf().setFormatterFactory(new DefaultFormatterFactory(new UtilMascaras().mascaraCpf(view.getjTextFieldCliCpf())));
         } catch (ParseException ex) {
             
         }
     }
     
+    /**
+     * passando 1 para quando clicar em novo
+     * passando 2 para qquando clicar em cancelar
+     * @param funcao 
+     */
+    public void setIconBtnNv(int funcao) {
+        
+         switch (funcao) {
+            case 1:
+                view.getjButtonNovo().setText("CANCELAR");
+                view.getjButtonNovo().setToolTipText("Clique aqui para cancelar a operacao");
+                break;
+            case 2:
+                view.getjButtonNovo().setText("NOVO");
+                view.getjButtonNovo().setToolTipText("Clique aqui para nova OS");
+                break;
+            default:
+                break;
+        }
+    }
 }
