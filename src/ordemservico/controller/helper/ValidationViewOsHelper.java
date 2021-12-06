@@ -2,26 +2,19 @@
 package ordemservico.controller.helper;
 
 import java.awt.Component;
-import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import ordemservico.model.OrdemServicoModel;
-import ordemservico.model.PecaServicoModel;
-import ordemservico.util.Util;
 import ordemservico.view.ViewOs;
 
 /**
  *
  * @author Tiago Teixeira
  */
-public class ValidationObjectOsModel {
+public class ValidationViewOsHelper {
     
 
     private ViewOs view;
 
-    
-    
-    
-    public ValidationObjectOsModel(ViewOs obj) {
+    public ValidationViewOsHelper(ViewOs obj) {
         this.view = obj;
     }
     

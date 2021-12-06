@@ -44,8 +44,8 @@ public class OsService {
         return dao.findById(Id, con.getConexaoDAO());
     }
     
-    public ArrayList<OrdemServicoModel> findByParameter(String parametro){
-        return dao.findAllParameter(parametro,con.getConexaoDAO());
+    public ArrayList<OrdemServicoModel> findByParameter(String parametro)throws SQLException{
+        return dao.findAllParameter(parametro,con);
     }
     
     public ArrayList<OrdemServicoModel> findAll() throws SQLException{
@@ -60,6 +60,13 @@ public class OsService {
         return dao.saveOsAskServiceClient(obj, clientNew, con);
     }
     
+    
+    public ClienteModel getClientByCpf(String NumberCPF) throws SQLException {
+        cliModel = new ClienteModel();
+        cliModel = dao.findClientByCpf(con, NumberCPF);
+        return cliModel;
+    }
+        
     public OsDao getDao() {
         return dao;
     }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.swing.text.DefaultFormatterFactory;
 import ordemservico.model.OrdemServicoModel;
 import ordemservico.model.PecaServicoModel;
-import ordemservico.util.DocumentNumeric;
+import ordemservico.util.UtilDocumentNumeric;
 import ordemservico.util.UtilMascaras;
 import ordemservico.view.ViewOs;
 
@@ -19,8 +19,8 @@ public class ControlaControlesViewHelper {
    
     public ControlaControlesViewHelper(Object view) {
         this.view = (ViewOs) view;
-
     }
+    
     /**
      * tipo 1 iniciando, tipo 2 novo, 3 buscando
      * @param tipoEntrada 
@@ -86,6 +86,15 @@ public class ControlaControlesViewHelper {
         view.getjTextFieldVeicPlaca().setText("");
         view.getjComboBoxTipoItem().setSelectedIndex(0);
     }
+    
+    public void limpaBlocoItem(){
+        view.getjTextFieldQtd().setText("1");
+        view.getjTextFieldTotalItem().setText("R$0,00");
+        view.getjTextFieldValorUnItem().setText("R$0,00");
+        view.getjComboBoxTipoItem().setSelectedIndex(0);
+        view.getjTextFieldDescricaoItem().setText("");
+    }
+    
     /**
      * true or false enable or disable controls
      * @param value 
@@ -96,7 +105,7 @@ public class ControlaControlesViewHelper {
         view.getjTableServPecas().setEnabled(value);
         view.getjTextAreaDefeito().setEnabled(value);
         view.getjTextAreaSolucao().setEnabled(value);
-        view.getjTextFieldBusca().setEnabled(value);
+        view.getjTextFieldBusca().setEnabled(true);
         view.getjTextFieldCliBairro().setEnabled(value);
         view.getjTextFieldCliCelular().setEnabled(value);
         view.getjTextFieldCliCep().setEnabled(value);
@@ -124,11 +133,11 @@ public class ControlaControlesViewHelper {
     
     
     public void controleDigitacao(){
-        view.getjTextFieldCliCep().setDocument(new DocumentNumeric());
-        view.getjTextFieldCliRG().setDocument(new DocumentNumeric());
-        view.getjTextFieldQtd().setDocument(new DocumentNumeric());
-        view.getjTextFieldTotalItem().setDocument(new DocumentNumeric());
-        view.getjTextFieldValorUnItem().setDocument(new DocumentNumeric());
+        view.getjTextFieldCliCep().setDocument(new UtilDocumentNumeric());
+        view.getjTextFieldCliRG().setDocument(new UtilDocumentNumeric());
+        view.getjTextFieldQtd().setDocument(new UtilDocumentNumeric());
+        view.getjTextFieldTotalItem().setDocument(new UtilDocumentNumeric());
+        view.getjTextFieldValorUnItem().setDocument(new UtilDocumentNumeric());
     }
     
     

@@ -125,11 +125,11 @@ public class OrderServiceDaoTest {
         ret = osDao.saveOsAskServiceClient(mockOsModel, true, mockConectDb);
  
         //verificando o caminho//
-        verify(mockConectDb, times(11)).getConexaoDAO();
-        verify(mockCon, times(10)).prepareStatement(anyString());
+        verify(mockConectDb, times(9)).getConexaoDAO();
+        verify(mockCon, times(8)).prepareStatement(anyString());
         verify(mockPstmt, times(8)).execute();
-        verify(mockRs, times(4)).next();
-        verify(mockPstmt, times(5)).close();
+        verify(mockRs, times(0)).next();
+        verify(mockPstmt, times(3)).close();
         //verifico se salvou//
         assertTrue(ret);
 

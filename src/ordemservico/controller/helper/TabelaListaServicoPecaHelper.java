@@ -82,6 +82,10 @@ public class TabelaListaServicoPecaHelper extends AbstractTableModel{
         this.fireTableDataChanged();
     }
     
+    public void usdateRows(){
+        this.fireTableDataChanged();
+    }
+    
     public void deleteRow(int indice){
         this.listOsPecaServ.remove(indice);
         this.fireTableRowsDeleted(0, getRowCount());

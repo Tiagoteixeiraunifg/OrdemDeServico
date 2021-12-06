@@ -79,7 +79,7 @@ public class OsDao {
                     //executando a instrução com os parametro setados
                     sucesso = ps.execute();
                     
-                    if (sucesso) {
+                    if (!sucesso) {
                         retorno = "Salvou OS";
                         ps2 = conn.getConexaoDAO().prepareStatement(sql_1);
                         rs = null;
@@ -126,7 +126,7 @@ public class OsDao {
                     //executando a instrução com os parametro setados
                     sucesso = ps.execute();
                   
-                    if (sucesso) {
+                    if (!sucesso) {
                         retorno = "Salvou OS";
                         ps2 = conn.getConexaoDAO().prepareStatement(sql_1);
                         rs = null;
@@ -177,6 +177,7 @@ public class OsDao {
      * @param obj 
      */
     public boolean saveClient(ClienteModel obj, ConnectDb conn) throws SQLException{
+        sucesso = false;       
         // variavel com a string do comando SQL para inserção de dados
         String sql = "INSERT INTO cliente(nome,cpf,rg,rua,bairro,numero,cidade,estado,cep,celular)VALUES(?,?,?,?,?,?,?,?,?,?)"; // salvar cliente
         String sqlIdRetorno = "select max(id) as id from cliente";
@@ -200,7 +201,8 @@ public class OsDao {
         //executando a instrução com os parametro setados
         sucesso = ps.execute();
 
-        if (sucesso) {
+        if (!sucesso) {
+            sucesso = true;
             ps2 = conn.getConexaoDAO().prepareStatement(sqlIdRetorno);
             rs = null;
             rs = ps2.executeQuery();
@@ -248,7 +250,8 @@ public class OsDao {
         ps.setDouble(6, obj.getValorTotal());
         sucesso = ps.execute();
         
-        if(sucesso){
+        if(!sucesso){
+            sucesso = true;
            retorno = "Gravado com sucesso!"; 
         }else{
            retorno = "Erro ao gravar!";  
@@ -363,8 +366,10 @@ public class OsDao {
         //executando a instrução com os parametro setados
         sucesso = ps.execute();
 
-        if (sucesso) {
+        if (!sucesso) {
+            sucesso = true;
             retorno = "Atualizado com sucesso!";
+            ret = true;
         } else {
             retorno = "Erro ao atualizar!";
         }
@@ -644,79 +649,118 @@ public class OsDao {
      * @param parametro
      * @return 
      */
-    public ArrayList<OrdemServicoModel> findAllParameter(String parametro, Connection conn)  {
+    public ArrayList<OrdemServicoModel> findAllParameter(String parametro, ConnectDb conn) throws SQLException {
 
         ArrayList<OrdemServicoModel> list = new ArrayList<OrdemServicoModel>();
-        
+
         //query de SQL
-        String sql ="SELECT os.id, os.id_cliente, cl.nome, cl.cpf, cl.rg, cl.rua, "
+        String sql = "SELECT os.id, os.id_cliente, cl.nome, cl.cpf, cl.rg, cl.rua, "
                 + " cl.bairro, cl.numero, cl.cidade, cl.estado, cl.cep, cl.celular, "
                 + " os.nomeVeiculo, os.modeloVeiculo, os.marcaVeiculo, os.corVeiculo, "
                 + " os.placaVeiculo, os.mecanico, os.defeitoreclamado, os.relatomecanico, "
                 + " os.datachegada, os.dataentrega, os.status "
                 + " FROM ordemservico os"
                 + " inner join cliente cl on cl.id = os.id_cliente "
-                + " where cl.nome like '"+parametro+"%' or cl.celular like '"+parametro+"%' or os.nomeVeiculo like '"+parametro+"%'"
-                + " or os.modeloVeiculo like '"+parametro+"%' or os.placaVeiculo like '"+parametro+"%' or os.mecanico like '"+parametro+"%'"
+                + " where cl.nome like '" + parametro + "%' or cl.celular like '" + parametro + "%' or os.nomeVeiculo like '" + parametro + "%'"
+                + " or os.modeloVeiculo like '" + parametro + "%' or os.placaVeiculo like '" + parametro + "%' or os.mecanico like '" + parametro + "%'"
                 + " order by cl.nome, os.placaVeiculo";
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        try {
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                ClienteModel cliM = new ClienteModel();
-                OrdemServicoModel os = new OrdemServicoModel();
-                os.setIdOrdem(rs.getInt(1));
-                cliM.setIdCliente(rs.getInt(2));
-                cliM.setNome(rs.getString(3));
-                cliM.setCpf(rs.getString(4));
-                cliM.setRg(rs.getString(5));
-                cliM.setRua(rs.getString(6));
-                cliM.setBairro(rs.getString(7));
-                cliM.setNumero(rs.getString(8));
-                cliM.setCidade(rs.getString(9));
-                cliM.setEstado(rs.getString(10));
-                cliM.setCep(rs.getString(11));
-                cliM.setCelular(rs.getString(12));
-                os.setCliente(cliM);
-                os.setNomeVeiculo(rs.getString(13));
-                os.setModeloVeiculo(rs.getString(14));
-                os.setMarcaVeiculo(rs.getString(15));
-                os.setCorVeiculo(rs.getString(16));
-                os.setPlacaVeiculo(rs.getString(17));
-                os.setMecanico(rs.getString(18));
-                os.setDefeitoReclamado(rs.getString(19));
-                os.setRelatoMecanico(rs.getString(20));
-                os.setDataChegada(rs.getString(21));
-                os.setDataEntrega(rs.getString(22));
-                os.setStatus(rs.getString(23));
-                list.add(os);
-            }
-            retorno = "Encontrado!";
-            sucesso = true;
+        ps = conn.getConexaoDAO().prepareStatement(sql);
+        rs = ps.executeQuery();
 
-        } catch (SQLException e) {
-            retorno = "Erro: " + e;
-            sucesso = false;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-
-            } catch (SQLException e) {
-                retorno = "Erro: " + e;
-            }
+        while (rs.next()) {
+            ClienteModel cliM = new ClienteModel();
+            OrdemServicoModel os = new OrdemServicoModel();
+            os.setIdOrdem(rs.getInt(1));
+            cliM.setIdCliente(rs.getInt(2));
+            cliM.setNome(rs.getString(3));
+            cliM.setCpf(rs.getString(4));
+            cliM.setRg(rs.getString(5));
+            cliM.setRua(rs.getString(6));
+            cliM.setBairro(rs.getString(7));
+            cliM.setNumero(rs.getString(8));
+            cliM.setCidade(rs.getString(9));
+            cliM.setEstado(rs.getString(10));
+            cliM.setCep(rs.getString(11));
+            cliM.setCelular(rs.getString(12));
+            os.setCliente(cliM);
+            os.setNomeVeiculo(rs.getString(13));
+            os.setModeloVeiculo(rs.getString(14));
+            os.setMarcaVeiculo(rs.getString(15));
+            os.setCorVeiculo(rs.getString(16));
+            os.setPlacaVeiculo(rs.getString(17));
+            os.setMecanico(rs.getString(18));
+            os.setDefeitoReclamado(rs.getString(19));
+            os.setRelatoMecanico(rs.getString(20));
+            os.setDataChegada(rs.getString(21));
+            os.setDataEntrega(rs.getString(22));
+            os.setStatus(rs.getString(23));
+            list.add(os);
         }
+        retorno = "Encontrado!";
+        sucesso = true;
+
+        if (rs != null) {
+            rs.close();
+        }
+        if (ps != null) {
+            ps.close();
+        }
+        if (conn != null) {
+            conn.FecharConexao();
+        }
+
         return list;
+    }
+    
+    public ClienteModel findClientByCpf(ConnectDb conn, String NumberCpf) throws SQLException {
+        ClienteModel cliM = new ClienteModel();
+
+        //query de SQL
+        String sql = "SELECT cl.id, cl.nome, cl.cpf, cl.rg, cl.rua, "
+                + " cl.bairro, cl.numero, cl.cidade, cl.estado, cl.cep, cl.celular "
+                + " FROM cliente cl"
+                + " where cl.cpf = ?";
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        ps = conn.getConexaoDAO().prepareStatement(sql);
+        ps.setString(1, NumberCpf);
+        rs = ps.executeQuery();
+        
+        
+        while (rs.next()) {
+            
+            cliM.setIdCliente(rs.getInt(1));
+            cliM.setNome(rs.getString(2));
+            cliM.setCpf(rs.getString(3));
+            cliM.setRg(rs.getString(4));
+            cliM.setRua(rs.getString(5));
+            cliM.setBairro(rs.getString(6));
+            cliM.setNumero(rs.getString(7));
+            cliM.setCidade(rs.getString(8));
+            cliM.setEstado(rs.getString(9));
+            cliM.setCep(rs.getString(10));
+            cliM.setCelular(rs.getString(11));
+            
+        }
+
+        retorno = "Encontrado!";
+        sucesso = true;
+
+        if (rs != null) {
+            rs.close();
+        }
+        if (ps != null) {
+            ps.close();
+        }
+        if (conn != null) {
+            conn.FecharConexao();
+        }
+
+        return cliM;
     }
 }

@@ -171,6 +171,17 @@ public class ViewOs extends javax.swing.JFrame {
 
         jLabel4.setText("RG");
 
+        jTextFieldCliCpf.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldCliCpfFocusLost(evt);
+            }
+        });
+        jTextFieldCliCpf.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldCliCpfKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelClienteLayout = new javax.swing.GroupLayout(jPanelCliente);
         jPanelCliente.setLayout(jPanelClienteLayout);
         jPanelClienteLayout.setHorizontalGroup(
@@ -696,6 +707,17 @@ public class ViewOs extends javax.swing.JFrame {
             controller.jTextValorUn();
         }
     }//GEN-LAST:event_jTextFieldValorUnItemKeyPressed
+
+    private void jTextFieldCliCpfKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCliCpfKeyPressed
+        if(evt.getKeyCode() == evt.VK_ENTER){
+            controller.jTextCpf();
+        } 
+        
+    }//GEN-LAST:event_jTextFieldCliCpfKeyPressed
+
+    private void jTextFieldCliCpfFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldCliCpfFocusLost
+        controller.jTextCpfFoco();
+    }//GEN-LAST:event_jTextFieldCliCpfFocusLost
 
     public JButton getjButtonAddItem() {
         return jButtonAddItem;

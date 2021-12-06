@@ -8,7 +8,7 @@ import javax.swing.text.PlainDocument;
  *
  * @author Tiago Teixeira
  */
-public class DocumentNumeric extends PlainDocument {
+public class UtilDocumentNumeric extends PlainDocument {
 
     @Override
     public void insertString(int offset, String str, javax.swing.text.AttributeSet attr) throws BadLocationException {

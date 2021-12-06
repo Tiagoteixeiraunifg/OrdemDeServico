@@ -7,7 +7,7 @@ import javax.swing.JTextField;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.PlainDocument;
 import ordemservico.controller.helper.ControlaControlesViewHelper;
-import ordemservico.util.DocumentNumeric;
+import ordemservico.util.UtilDocumentNumeric;
 import ordemservico.util.UtilMascaras;
 import ordemservico.view.ViewOs;
 import org.dom4j.tree.DefaultDocument;
@@ -43,7 +43,7 @@ public class ViewHelperTest {
     
    
     @Mock
-    private DocumentNumeric doc;
+    private UtilDocumentNumeric doc;
     
     public ViewHelperTest() {
     }

@@ -118,11 +118,11 @@ public class ModelClientAskDaoTest {
         boolean ret;
         ret = osDao.saveClient(cliModel, mockConectDb);
         //verificando o caminho//
-        verify(mockConectDb, times(3)).getConexaoDAO();
-        verify(mockCon, times(2)).prepareStatement(anyString());
+        verify(mockConectDb, times(2)).getConexaoDAO();
+        verify(mockCon, times(1)).prepareStatement(anyString());
         verify(mockPstmt, times(10)).setString(anyInt(), anyString());
         verify(mockPstmt, times(1)).execute();
-        verify(mockPstmt, times(2)).close();
+        verify(mockPstmt, times(1)).close();
         verify(mockConectDb, times(1)).FecharConexao();
         //verifico se salvou//
         assertTrue(ret);  
