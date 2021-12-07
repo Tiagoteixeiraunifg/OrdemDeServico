@@ -47,6 +47,7 @@ public class ControllerOS implements IController{
     private boolean usoAddItem = false;
     private boolean clientNew = true;
     private ValidationViewOsHelper validationTexts;
+    private int indexItemList = 0;
     
     @Override
     public void executa(Object objeto) {
@@ -177,33 +178,91 @@ public class ControllerOS implements IController{
 
     }
     
-    public void jButtonGravar(){
-        if (validationTexts.validationJTexts()) {
-            if(loadObjOsClient()){
-                if(saveOsModelDb()){
-                    carregaTabela();
-                    viewOs.getjTabbedPaneSeparacao().setSelectedIndex(0);
-                    precionadoNovo = false;
-                    precionadoEditar = false;
-                    ControlsHelper.controleJtext(false);
-                    ControlsHelper.habilitaBotoes(1);
-                    ControlsHelper.setIconBtnNv(2);
-                    if (!precionadoEditar) {
-                        ControlsHelper.limpaTela();
+    public void jButtonGravar() {
+        if (precionadoNovo && !precionadoEditar) {
+            if (validationTexts.validationJTexts()) {
+                if (loadObjOsClient()) {
+                    if (saveOsModelDb()) {
+                        carregaTabela();
+                        viewOs.getjTabbedPaneSeparacao().setSelectedIndex(0);
+                        precionadoNovo = false;
+                        precionadoEditar = false;
+                        ControlsHelper.controleJtext(false);
+                        ControlsHelper.habilitaBotoes(1);
+                        ControlsHelper.setIconBtnNv(2);
+                        if (!precionadoEditar) {
+                            ControlsHelper.limpaTela();
+                        }
                     }
-                } 
+                }
+            }
+        } else if (precionadoEditar && !precionadoNovo) {
+            if (validationTexts.validationJTexts()) {
+                if (loadObjOsClient()) {
+                    if (updateOsModelDb()) {
+                        carregaTabela();
+                        viewOs.getjTabbedPaneSeparacao().setSelectedIndex(0);
+                        precionadoNovo = false;
+                        precionadoEditar = false;
+                        ControlsHelper.controleJtext(false);
+                        ControlsHelper.habilitaBotoes(1);
+                        ControlsHelper.setIconBtnNv(2);
+                        if (!precionadoEditar) {
+                            ControlsHelper.limpaTela();
+                        }
+                    }
+                }
             }
         }
     }
     
     public void jButtonAdd() {
-        if (validationTexts.validationJTextsAskService()) {
-            loadObjItem();
-            listAskServiceModel.add(askServiceModel);
-            addItemTableItem(listAskServiceModel);
-            ControlsHelper.limpaBlocoItem();
-            viewOs.getjTextFieldDescricaoItem().requestFocus();
+        if (precionadoEditarItem && !precionadoExcluirItem) {
+            if (validationTexts.validationJTextsAskService()) {
+                loadObjItem(true);
+                updateAskService(askServiceModel);
+                listAskServiceModel.set(indexItemList, askServiceModel);
+                addItemTableItem(listAskServiceModel);
+                ControlsHelper.limpaBlocoItem();
+                viewOs.getjTextFieldDescricaoItem().requestFocus();
+                precionadoExcluirItem = false;
+                precionadoEditarItem = false;
+                viewOs.getjButtonAddItem().setText("ADICIONAR");
+            }
+        } else if (!precionadoEditarItem && !precionadoExcluirItem) {
+            if (precionadoEditar) {
+                if (validationTexts.validationJTextsAskService()) {
+                    loadObjItem(false);
+                    saveAskModelDb(askServiceModel);
+                    
+                    listAskServiceModel = osService.findOsById(osModel.getIdOrdem()).getPecasSevico();
+                    addItemTableItem(listAskServiceModel);
+                    ControlsHelper.limpaBlocoItem();
+                    viewOs.getjTextFieldDescricaoItem().requestFocus();
+                }
+            } else {
+                if (validationTexts.validationJTextsAskService()) {
+                    loadObjItem(false);
+                    listAskServiceModel.add(askServiceModel);
+                    addItemTableItem(listAskServiceModel);
+                    ControlsHelper.limpaBlocoItem();
+                    viewOs.getjTextFieldDescricaoItem().requestFocus();
+                }
+            }
+
+        } else if (precionadoExcluirItem){
+            if(deleteItemByIdItem(askServiceModel.getIdServPeca(), osModel.getIdOrdem())){
+                listAskServiceModel.remove(indexItemList);
+                addItemTableItem(listAskServiceModel);
+                ControlsHelper.limpaBlocoItem();
+                precionadoExcluirItem = false;
+                precionadoEditarItem = false;
+                viewOs.getjButtonAddItem().setText("ADICIONAR");
+                viewOs.getjTextFieldDescricaoItem().requestFocus();
+            }  
         }
+
+        
     }
 
     public void jTextValorUn() {
@@ -214,9 +273,59 @@ public class ControllerOS implements IController{
         viewOs.getjTextFieldTotalItem().setText(FormatterMoeda.format(total));
 
     }
+    
+    public void jTableHistorico(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 1) {
 
-    private void loadObjItem() {
-        askServiceModel = new PecaServicoModel();
+            ControlsHelper.habilitaBotoes(3);
+
+        } else if (evt.getClickCount() == 2) {
+            precionadoNovo = false;
+            precionadoEditar = true;
+            loadFrameByObjct(osService.findOsById(viewOs.getjTableHistorico().getSelectedRow()));
+            ControlsHelper.controleJtext(true);
+            ControlsHelper.setIconBtnNv(1);
+            ControlsHelper.habilitaBotoes(2);
+            viewOs.getjTabbedPaneSeparacao().setSelectedIndex(1);
+        }
+    }
+    
+    public void jTableItem(java.awt.event.MouseEvent evt){
+        if(evt.getClickCount() == 1){
+            precionadoExcluirItem = true;
+            precionadoEditarItem = true;
+            viewOs.getjButtonAddItem().setText("EXCLUIR");
+            indexItemList = viewOs.getjTableServPecas().getSelectedRow();
+            askServiceModel = listAskServiceModel.get(indexItemList);
+            loadFrameItemByObject(askServiceModel);
+        }else if(evt.getClickCount() == 2){
+            viewOs.getjButtonAddItem().setText("SALVAR");
+            precionadoExcluirItem = false;
+            precionadoEditarItem = true;
+            indexItemList = viewOs.getjTableServPecas().getSelectedRow();
+            askServiceModel = listAskServiceModel.get(indexItemList);
+            loadFrameItemByObject(askServiceModel);
+        }
+    }
+
+    private boolean deleteItemByIdItem(int idItem, int idOs){
+     boolean ret = false;
+        try {
+            if(osService.deleitemById(idItem, idOs)){
+                ret = true;     
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(viewOs, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            ret = false;
+        }
+        return ret;
+    }
+    
+    private void loadObjItem(boolean upd) {
+        if(!upd){
+             askServiceModel = new PecaServicoModel();
+        }
+        askServiceModel.setIdOrdem(osModel.getIdOrdem());
         askServiceModel.setTipo(viewOs.getjComboBoxTipoItem().getSelectedItem().toString());
         askServiceModel.setValorTotal(new Util().formataMoeda(viewOs.getjTextFieldTotalItem().getText().replace("R$", "")));
         askServiceModel.setValorUn(new Util().formataMoeda(viewOs.getjTextFieldValorUnItem().getText().replace("R$", "")));
@@ -309,7 +418,41 @@ public class ControllerOS implements IController{
         }
         return ret;
     }
+    
+    private boolean saveAskModelDb(PecaServicoModel obj){
+        boolean ret = false;
+        try {
+            ret = osService.saveItemServPec(obj);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(viewOs, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+        return ret;
+    }
+    
+    private boolean updateOsModelDb(){
+        boolean ret = false;
+        try {
 
+            ret = osService.updateByObject(osModel);
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(viewOs, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            ret = false;
+        }
+        return ret;
+    }
+    
+    private boolean updateAskService(PecaServicoModel obj){
+        boolean ret = false;
+        try {
+            ret = osService.updateByObjectItem(obj);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(viewOs, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            ret = false;
+        }
+        return ret;
+    }
+    
     private void loadFrameCli() {
 
         viewOs.getjTextFieldCliBairro().setText(cliModel.getBairro());
@@ -326,4 +469,39 @@ public class ControllerOS implements IController{
         viewOs.getjTextFieldVeicNome().setCaretPosition(0);
 
     }
+    
+    private void loadFrameByObjct(OrdemServicoModel obj){
+        
+        osModel = obj;
+        cliModel = obj.getCliente();
+        listAskServiceModel = obj.getPecasSevico();
+        modelTableItem = new TabelaListaServicoPecaHelper(listAskServiceModel);
+        loadFrameCli();
+        
+        viewOs.getjTableServPecas().setModel(modelTableItem);
+        viewOs.getjTextAreaDefeito().setText(osModel.getDefeitoReclamado());
+        viewOs.getjTextAreaSolucao().setText(osModel.getRelatoMecanico());        
+        viewOs.getjTextFieldDataChegada().setText(new Util().dataFormatoBR(osModel.getDataChegada()));
+        viewOs.getjTextFieldDataEntrega().setText(new Util().dataFormatoBR(osModel.getDataEntrega()));
+        viewOs.getjTextFieldNmMecanico().setText(osModel.getMecanico());
+        viewOs.getjTextFieldVeicCor().setText(osModel.getCorVeiculo());
+        viewOs.getjTextFieldVeicMarca().setText(osModel.getMarcaVeiculo());
+        viewOs.getjTextFieldVeicModelo().setText(osModel.getModeloVeiculo());
+        viewOs.getjTextFieldVeicNome().setText(osModel.getNomeVeiculo());
+        viewOs.getjTextFieldVeicPlaca().setText(osModel.getPlacaVeiculo());
+ 
+        
+        
+        
+    }
+    
+    private void loadFrameItemByObject(PecaServicoModel obj){
+        viewOs.getjTextFieldQtd().setText(String.valueOf(obj.getQuantidade()).replace(".", ","));
+        viewOs.getjTextFieldTotalItem().setText(FormatterMoeda.format(obj.getValorTotal()));
+        viewOs.getjTextFieldValorUnItem().setText(FormatterMoeda.format(obj.getValorUn()));
+        viewOs.getjComboBoxTipoItem().setSelectedItem(obj.getTipo());
+        viewOs.getjTextFieldDescricaoItem().setText(obj.getDescricao());
+    }
+    
+    
 }

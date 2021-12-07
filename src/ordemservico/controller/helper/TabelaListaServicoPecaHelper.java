@@ -5,8 +5,10 @@
  */
 package ordemservico.controller.helper;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.swing.table.AbstractTableModel;
 import ordemservico.model.PecaServicoModel;
 
@@ -15,13 +17,18 @@ import ordemservico.model.PecaServicoModel;
  * @author Tiago Teixeira
  */
 public class TabelaListaServicoPecaHelper extends AbstractTableModel{
-     private final List<PecaServicoModel> listOsPecaServ; 
+    private final List<PecaServicoModel> listOsPecaServ; 
  
-    private final String[] colunas = {"Codigo", "Descricao", "Tipo", "Valor Un", "Valor Total"};
+    private final String[] colunas = {"Codigo", "Descricao", "Tipo", "Qtd","Valor Un", "Valor Total"};
     
+    private NumberFormat FormatterMoeda;
+    private Locale locale;
     
     public TabelaListaServicoPecaHelper(List<PecaServicoModel> listOsPecaServ) {
         this.listOsPecaServ = listOsPecaServ;
+        locale = new Locale("pt", "BR");
+        FormatterMoeda = NumberFormat.getCurrencyInstance(locale); 
+        
     }
 
    @Override
@@ -50,9 +57,11 @@ public class TabelaListaServicoPecaHelper extends AbstractTableModel{
             case 2:
                 return os.getTipo();
             case 3:
-                return os.getValorUn();
+                return String.valueOf((int)os.getQuantidade());
             case 4:
-                return os.getValorTotal();
+                return FormatterMoeda.format(os.getValorUn());
+            case 5:
+                return FormatterMoeda.format(os.getValorTotal());
             default:
                 return null;
         }
@@ -69,9 +78,11 @@ public class TabelaListaServicoPecaHelper extends AbstractTableModel{
             case 2:
                 return String.class;
             case 3:
-                return Double.class;
+                return String.class;
             case 4:
-                return Double.class;
+                return String.class;
+            case 5:
+                return String.class;
             default:
                 return null;
         }

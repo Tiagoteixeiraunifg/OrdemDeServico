@@ -125,6 +125,11 @@ public class ViewOs extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableHistorico.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableHistoricoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableHistorico);
 
         jTextFieldBusca.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -460,6 +465,12 @@ public class ViewOs extends javax.swing.JFrame {
 
         jLabel20.setText("Descrição");
 
+        jTextFieldDescricaoItem.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldDescricaoItemKeyReleased(evt);
+            }
+        });
+
         jLabel21.setText("Quantidade");
 
         jLabel22.setText("Valor Un");
@@ -576,6 +587,11 @@ public class ViewOs extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableServPecas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableServPecasMouseClicked(evt);
+            }
+        });
         jScrollPane4.setViewportView(jTableServPecas);
 
         javax.swing.GroupLayout jPanelListaPecaServLayout = new javax.swing.GroupLayout(jPanelListaPecaServ);
@@ -718,6 +734,18 @@ public class ViewOs extends javax.swing.JFrame {
     private void jTextFieldCliCpfFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldCliCpfFocusLost
         controller.jTextCpfFoco();
     }//GEN-LAST:event_jTextFieldCliCpfFocusLost
+
+    private void jTableHistoricoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableHistoricoMouseClicked
+        controller.jTableHistorico(evt);
+    }//GEN-LAST:event_jTableHistoricoMouseClicked
+
+    private void jTableServPecasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableServPecasMouseClicked
+        controller.jTableItem(evt);
+    }//GEN-LAST:event_jTableServPecasMouseClicked
+
+    private void jTextFieldDescricaoItemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldDescricaoItemKeyReleased
+        
+    }//GEN-LAST:event_jTextFieldDescricaoItemKeyReleased
 
     public JButton getjButtonAddItem() {
         return jButtonAddItem;

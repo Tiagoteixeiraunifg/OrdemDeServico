@@ -303,7 +303,7 @@ public class OsDao {
 
             for (PecaServicoModel item : obj.getPecasSevico()) {
                 ps2 = conn.getConexaoDAO().prepareStatement(sql_1);
-                ps2.setInt(1, obj.getIdOrdem());
+                ps2.setInt(1, item.getIdOrdem());
                 ps2.setString(2, item.getTipo());
                 ps2.setString(3, item.getDescricao());
                 ps2.setDouble(4, item.getQuantidade());
@@ -387,7 +387,7 @@ public class OsDao {
      * atualiza o item na lista de peca e servico da ordem de servico
      * @param obj 
      */
-    public boolean updateAskService(PecaServicoModel obj, Connection conn)  {
+    public boolean updateAskService(PecaServicoModel obj, ConnectDb conn)  {
         // variavel com a string do comando SQL para atualização dos dados na enticade
         String sql = "update itens_ordemservico set id_ordem = ?,tipo = ?,descricao = ?,"
                    + " quantidade = ?,valor_un = ?,valor_total = ? where id  = ?";
@@ -397,7 +397,7 @@ public class OsDao {
                
         try {
             
-            ps = conn.prepareStatement(sql);
+            ps = conn.getConexaoDAO().prepareStatement(sql);
 
             //adicionando os valores de acordo a ordem dos parametros do string sql
 
@@ -408,8 +408,7 @@ public class OsDao {
             ps.setDouble(5, obj.getValorUn());
             ps.setDouble(6, obj.getValorTotal());
             ps.setInt(7, obj.getIdServPeca());
-            ps.execute();
-            
+           
             //executando a instrução com os parametro setados da classe colaborador
             ps.execute();
              
@@ -424,7 +423,7 @@ public class OsDao {
                     ps.close();
                 }
                 if (conn != null) {
-                    conn.close();
+                    conn.FecharConexao();
                 }
             } catch (SQLException e) {
                 retorno = "Erro fechar conexão: " + e;
@@ -437,46 +436,38 @@ public class OsDao {
      * deleta os itens e a ordem de servico com o parametro IdOrdem inserido
      * @param parametro 
      */
-    public boolean deleteById(int parametro, Connection conn) {
+    public boolean deleteById(int parametro, Connection conn) throws SQLException {
         // variavel com a string do comando SQL para atualização dos dados na enticade Colaborador
         String sql = "delete from itens_ordemserrvico where id_ordem = ?";
         String sql2 = "delete from ordemservico where id = ?";
         PreparedStatement ps = null;
         PreparedStatement ps1 = null;
 
-        try {
-            ps1 = conn.prepareStatement(sql);
-            //adicionando os valores de acordo a ordem dos parametros do string sql
-            ps1.setInt(1, parametro);
-            //executando a instrução com os parametro setados da classe colaborador
-            ps1.execute();
-            retorno = "Deletado itens com sucesso e";
-            
-            ps = conn.prepareStatement(sql2);
-            ps.setInt(1, parametro);
-            ps.execute();
-            
-            
-            retorno = retorno + " OS deletada com sucesso!";
-            sucesso = true;
-        } catch (SQLException e) {
-            retorno = "Erro ao Deletar: " + e.getMessage();
-            sucesso = false;
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (ps1 != null) {
-                    ps1.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                retorno = "Erro : " + e;
-            }
+        ps1 = conn.prepareStatement(sql);
+        //adicionando os valores de acordo a ordem dos parametros do string sql
+        ps1.setInt(1, parametro);
+        //executando a instrução com os parametro setados da classe colaborador
+        ps1.execute();
+        sucesso = true;
+        retorno = "Deletado itens com sucesso e";
+
+        ps = conn.prepareStatement(sql2);
+        ps.setInt(1, parametro);
+        ps.execute();
+        
+        retorno = retorno + " OS deletada com sucesso!";
+        sucesso = true;
+
+        if (ps != null) {
+            ps.close();
         }
+        if (ps1 != null) {
+            ps1.close();
+        }
+        if (conn != null) {
+            conn.close();
+        }
+
         return sucesso;
     }
 
@@ -763,4 +754,30 @@ public class OsDao {
 
         return cliM;
     }
+
+    public boolean deleteItemById(int idItem, int idOs, ConnectDb con) throws SQLException{
+        sucesso = false;
+        
+        String sql = "delete from itens_ordemservico where id_ordem = ? and id = ?";
+        
+        PreparedStatement ps;
+        ps = con.getConexaoDAO().prepareStatement(sql);
+        ps.setInt(1, idOs);
+        ps.setInt(2, idItem);
+        ps.execute();
+        
+        sucesso = true;
+        
+        if (ps != null) {
+            ps.close();
+        }
+
+        if (con != null) {
+            con.FecharConexao();
+        }
+        
+        return sucesso;
+    }
+    
+    
 }

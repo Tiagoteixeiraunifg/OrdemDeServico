@@ -48,6 +48,10 @@ public class OsService {
         return dao.findAllParameter(parametro,con);
     }
     
+    public boolean updateByObject(OrdemServicoModel obj) throws SQLException{
+        return  dao.updateOs(obj, con);
+    }
+    
     public ArrayList<OrdemServicoModel> findAll() throws SQLException{
         return dao.findAll(con);
     }
@@ -97,6 +101,16 @@ public class OsService {
 
     public void setOsModel(OrdemServicoModel osModel) {
         this.osModel = osModel;
+    }
+
+    public boolean deleitemById(int idItem, int idOs) throws SQLException {
+
+        return dao.deleteItemById(idItem, idOs, con);
+
+    }
+
+    public boolean updateByObjectItem(PecaServicoModel askServiceModel) throws SQLException{
+        return dao.updateAskService(askServiceModel, con);
     }
     
     
