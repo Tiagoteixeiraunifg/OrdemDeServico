@@ -3,6 +3,7 @@
 Realização da avaliação do quarto semestre  do curso de ADS;
 
 # TECNOLOGIAS USADAS
+
 Lingugem  JAVA  8 + Swing
 IDE NetBeans 12 
 Banco de Dados MySQL 
@@ -11,6 +12,9 @@ Banco de Dados MySQL
 jUnit
 Mockito
 
-#PADRÕES ADOTADOS
-Padrão MVC (Model, view, ontroller)
+# PADRÕES ADOTADOS
+MVC
+HELPES
+UTILS
+SINGLETON
 
