@@ -282,7 +282,7 @@ public class ControllerOS implements IController{
         } else if (evt.getClickCount() == 2) {
             precionadoNovo = false;
             precionadoEditar = true;
-            loadFrameByObjct(osService.findOsById(viewOs.getjTableHistorico().getSelectedRow()));
+            loadFrameByObjct(osService.findOsById( (int) viewOs.getjTableHistorico().getValueAt(viewOs.getjTableHistorico().getSelectedRow(), 0)));
             ControlsHelper.controleJtext(true);
             ControlsHelper.setIconBtnNv(1);
             ControlsHelper.habilitaBotoes(2);
@@ -335,7 +335,10 @@ public class ControllerOS implements IController{
     
     private boolean loadObjOsClient() {
         boolean ret = true;
-        osModel = new OrdemServicoModel();
+        if(!precionadoEditar){
+            osModel = new OrdemServicoModel();
+        }
+        
         if (clientNew) {
             cliModel = new ClienteModel();
         }
